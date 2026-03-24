@@ -81,3 +81,71 @@ export async function upsertToVectorize(embeddings, vectorizeUpsert) {
   }));
   await vectorizeUpsert(vectors);
 }
+
+/**
+ * Main entry point: parse all specs, generate embeddings, upsert to Vectorize.
+ * Requires environment variables: OPENAI_API_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_VECTORIZE_INDEX_ID
+ * Run with: npm run embeddings
+ */
+async function main() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error('Error: OPENAI_API_KEY environment variable is required');
+    process.exit(1);
+  }
+
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const indexId = process.env.CLOUDFLARE_VECTORIZE_INDEX_ID;
+  if (!accountId || !indexId) {
+    console.error('Error: CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_VECTORIZE_INDEX_ID are required');
+    process.exit(1);
+  }
+
+  console.log('Parsing specs from specs/ directory...');
+  const specs = parseAllSpecs('specs');
+  console.log(`Found ${specs.length} spec(s)`);
+
+  if (specs.length === 0) {
+    console.log('No specs found. Exiting.');
+    return;
+  }
+
+  console.log('Generating embeddings via OpenAI...');
+  const embeddings = await generateEmbeddings(specs, apiKey);
+  console.log(`Generated ${embeddings.length} embedding(s)`);
+
+  console.log('Upserting to Cloudflare Vectorize...');
+  const cfApiToken = process.env.CLOUDFLARE_API_TOKEN;
+  const vectorizeUpsert = async (vectors) => {
+    const res = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/vectorize/v2/indexes/${indexId}/upsert`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${cfApiToken}`,
+          'Content-Type': 'application/x-ndjson',
+        },
+        body: vectors.map((v) => JSON.stringify(v)).join('\n'),
+      }
+    );
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Vectorize upsert failed (${res.status}): ${text}`);
+    }
+    const data = await res.json();
+    console.log(`Vectorize upsert response: ${JSON.stringify(data)}`);
+    return data;
+  };
+
+  await upsertToVectorize(embeddings, vectorizeUpsert);
+  console.log('Done! All embeddings upserted to Vectorize.');
+}
+
+// Run main() if this file is executed directly (not imported)
+const isMainModule = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/.*\//, ''));
+if (isMainModule) {
+  main().catch((err) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+}

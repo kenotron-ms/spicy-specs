@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev:workers": "wrangler dev workers/index.js"
+    "dev:workers": "wrangler dev workers/index.js",
+    "embeddings": "node build/generate-embeddings.js"
   },
   "keywords": [
     "specs",
