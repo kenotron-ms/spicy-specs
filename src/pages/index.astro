@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allSpecs = await getCollection('specs');
+
+const specs = allSpecs.sort((a, b) => {
+  return new Date(b.data.updated).getTime() - new Date(a.data.updated).getTime();
+});
+
+function getChiliRating(level?: number): string {
+  if (!level) return '';
+  return '🌶️'.repeat(Math.min(level, 5));
+}
+---
+
+<BaseLayout title="Library">
+  <div class="library-intro">
+    <h1>Spicy Specs Library</h1>
+    <p>Curated specs, patterns, and anti-patterns for building better AI agents.</p>
+  </div>
+
+  <div class="spec-grid">
+    {specs.map((spec) => (
+      <article class="spec-card">
+        <div class="card-header">
+          <span class={`badge badge-${spec.data.category}`}>{spec.data.category}</span>
+          {spec.data.spiceLevel && (
+            <span class="chili-rating">{getChiliRating(spec.data.spiceLevel)}</span>
+          )}
+        </div>
+
+        <h2>
+          <a href={`/e/${spec.data.slug}`}>{spec.data.title}</a>
+        </h2>
+
+        <p class="card-summary">{spec.data.summary}</p>
+
+        <div class="card-meta">
+          <span>{spec.data.author}</span>
+          <span>{spec.data.updated}</span>
+        </div>
+
+        {spec.data.tags && spec.data.tags.length > 0 && (
+          <div class="card-tags">
+            {spec.data.tags.slice(0, 3).map((tag) => (
+              <span class="tag">{`#${tag}`}</span>
+            ))}
+          </div>
+        )}
+      </article>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .library-intro {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .library-intro h1 {
+    font-size: 3rem;
+    color: var(--dark);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .library-intro p {
+    color: var(--dark);
+    font-size: 1.1rem;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .spec-card {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .spec-card:hover {
+    border-color: var(--spicy-red);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chili-rating {
+    font-size: 1rem;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  h2 a {
+    color: var(--dark);
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    color: var(--spicy-red);
+  }
+
+  .card-summary {
+    color: var(--dark);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #666;
+    border-top: 1px solid #eee;
+    padding-top: var(--spacing-sm);
+    margin-top: auto;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(168, 50, 50, 0.1);
+    color: var(--spicy-red);
+  }
+</style>
