@@ -1,25 +1,24 @@
 # Dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
-pnpm-debug.log
-lerna-debug.log
 
-# Production
+# Build output
 dist/
-build/
 
-# Misc
-.DS_Store
-*.pem
+# Cloudflare
+.wrangler/
 
-# Debug
-debug.log*
-
-# Local env files
+# Environment
 .env
 .env.local
 .env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
@@ -28,5 +27,6 @@ debug.log*
 *.swo
 *~
 
-# OS
-Thumbs.db
+# Python (legacy)
+.ruff_cache/
+__pycache__/
