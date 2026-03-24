@@ -5,21 +5,27 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "node build/generate.js",
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev:workers": "wrangler dev workers/index.js",
-    "preview": "npx serve dist"
+    "dev:workers": "wrangler dev workers/index.js"
   },
-  "keywords": ["specs", "patterns", "anti-patterns", "ai-agents"],
+  "keywords": [
+    "specs",
+    "patterns",
+    "anti-patterns",
+    "ai-agents"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "commander": "^14.0.3",
-    "gray-matter": "^4.0.3",
-    "marked": "^17.0.5"
+    "@astrojs/cloudflare": "^12.6.13",
+    "astro": "^5.18.1",
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "vitest": "^4.1.1",
