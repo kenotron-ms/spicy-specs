@@ -1,0 +1,14 @@
+name = "spicy-specs-api"
+main = "workers/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+ENVIRONMENT = "production"
+
+[[kv_namespaces]]
+binding = "HEAT_STORE"
+id = "PLACEHOLDER_KV_NAMESPACE_ID"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "spicy-specs-index"
