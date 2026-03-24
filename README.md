@@ -20,7 +20,7 @@ specs/                   # Markdown specs organized by category
   patterns/
   philosophy/
   reference-apps/
-  specs/
+  specs/               # for spec-type content
 src/
   content/
     specs/               # Symlink → ../../specs
