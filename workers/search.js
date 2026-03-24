@@ -39,7 +39,12 @@ export async function handleSearch({ query, category, limit = 10, env, fetcher =
     return { results: [], took_ms: Date.now() - start };
   }
 
-  const vector = await embedText(query, env.OPENAI_API_KEY, fetcher);
+  let vector;
+  try {
+    vector = await embedText(query, env.OPENAI_API_KEY, fetcher);
+  } catch {
+    return { results: [], took_ms: Date.now() - start };
+  }
 
   const queryOptions = {
     topK: limit,
