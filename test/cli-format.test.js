@@ -34,16 +34,14 @@ describe('formatSearchResults', () => {
     expect(output).toContain('SPICY SPECS SEARCH RESULTS');
     expect(output).toContain('1.');
     expect(output).toContain('Test Spec One');
-    expect(output).toContain('(patterns)');
+    expect(output).toContain('(PATTERNS)');
     expect(output).toContain('2.');
     expect(output).toContain('Test Spec Two');
     // Should contain chili emoji
     expect(output).toContain('\u{1F336}\u{FE0F}');
-  });
-
-  it('shows "No results found" for empty results in text format', () => {
-    const output = formatSearchResults([], 'text');
-    expect(output).toContain('No results found');
+    // Empty results
+    const empty = formatSearchResults([], 'text');
+    expect(empty).toContain('No results found');
   });
 
   it('renders valid JSON for json format', () => {

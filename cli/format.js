@@ -41,7 +41,7 @@ export function formatSearchResults(data, format) {
 
   const lines = [`${CHILI} SPICY SPECS SEARCH RESULTS ${CHILI}`, ''];
   data.forEach((item, i) => {
-    const category = item.category ? ` (${item.category})` : '';
+    const category = item.category ? ` (${item.category.toUpperCase()})` : '';
     const arrow = item.url ? ` → ${item.url}` : '';
     lines.push(`${i + 1}. ${item.title}${category}${arrow}`);
   });
