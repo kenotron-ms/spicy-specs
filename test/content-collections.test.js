@@ -38,8 +38,10 @@ describe('Content Collections configuration (src/content/config.ts)', () => {
     expect(content).toMatch(/title\s*:\s*z\.string\(\)/);
   });
 
-  it('schema has slug as z.string()', () => {
-    expect(content).toMatch(/slug\s*:\s*z\.string\(\)[^.]/);
+  it('schema does not define slug (reserved by Astro 5 - use entry.slug instead)', () => {
+    // In Astro 5, 'slug' is a reserved field consumed by Astro to set entry.slug.
+    // It must NOT be in the Zod schema or build will fail with InvalidContentEntryDataError.
+    expect(content).not.toMatch(/^\s+slug\s*:\s*z\./m);
   });
 
   it('schema has category as z.enum with all required values', () => {

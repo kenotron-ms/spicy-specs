@@ -4,7 +4,6 @@ const specsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
     category: z.enum(['spec', 'antipattern', 'reference-app', 'pattern', 'philosophy']),
     spiceLevel: z.number().min(0).max(5).optional(),
     tags: z.array(z.string()).optional(),

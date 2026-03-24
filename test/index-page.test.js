@@ -92,8 +92,8 @@ describe('src/pages/index.astro', () => {
       expect(page).toMatch(/getChiliRating|chiliRating/);
     });
 
-    it('has h2 with link to /e/{spec.data.slug}', () => {
-      expect(page).toMatch(/href=["']\/e\/\{spec\.data\.slug\}["']|href=\{`\/e\/\$\{spec\.data\.slug\}`\}/);
+    it('has h2 with link to /e/{spec.slug} (Astro 5: slug is reserved, use entry.slug)', () => {
+      expect(page).toMatch(/href=["']\/e\/\{spec\.slug\}["']|href=\{`\/e\/\$\{spec\.slug\}`\}/);
     });
 
     it('has p.card-summary with spec summary', () => {

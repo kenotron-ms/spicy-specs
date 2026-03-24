@@ -5,7 +5,7 @@ import SpecLayout from '../../layouts/SpecLayout.astro';
 export async function getStaticPaths() {
   const specs = await getCollection('specs');
   return specs.map((spec) => ({
-    params: { slug: spec.data.slug },
+    params: { slug: spec.slug },
     props: { spec },
   }));
 }
