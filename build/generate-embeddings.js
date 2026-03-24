@@ -50,6 +50,8 @@ export function parseAllSpecs(specsDir) {
  */
 export async function generateEmbeddings(specs, apiKey, fetcher = fetch) {
   const results = [];
+  // Sequential to respect OpenAI rate limits — do not convert to Promise.all
+  // Throws on first failure — caller is responsible for retry
   for (const spec of specs) {
     const vector = await embedText(spec.textToEmbed, apiKey, fetcher);
     results.push({
