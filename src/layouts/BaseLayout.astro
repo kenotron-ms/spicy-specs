@@ -1,0 +1,76 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Curated library of specs, patterns, and anti-patterns for AI agents',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | Spicy Specs</title>
+    <link rel="stylesheet" href="/styles/global.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="site-title">🌶️ Spicy Specs</h1>
+        <nav>
+          <a href="/">Library</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; 2026 Spicy Specs. Built with Astro.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    background-color: var(--spicy-red);
+    color: var(--parchment);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .site-title {
+    font-size: 2rem;
+    color: var(--parchment);
+    margin: 0;
+  }
+
+  nav a {
+    color: var(--parchment);
+    font-weight: 600;
+  }
+
+  nav a:hover {
+    color: var(--gold);
+  }
+
+  .site-footer {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border-top: 2px solid var(--spicy-red);
+    text-align: center;
+    color: var(--dark);
+  }
+</style>
