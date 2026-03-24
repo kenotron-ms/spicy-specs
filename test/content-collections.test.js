@@ -38,11 +38,8 @@ describe('Content Collections configuration (src/content/config.ts)', () => {
     expect(content).toMatch(/title\s*:\s*z\.string\(\)/);
   });
 
-  it('schema has slug as z.string().optional() (required by Astro v5 — slug is stripped before schema validation)', () => {
-    // Astro v5 strips `slug` from frontmatter data before passing to Zod validation.
-    // Using z.string().optional() ensures the dev server starts without errors
-    // while still declaring the field in the schema.
-    expect(content).toMatch(/slug\s*:\s*z\.string\(\)\.optional\(\)/);
+  it('schema has slug as z.string()', () => {
+    expect(content).toMatch(/slug\s*:\s*z\.string\(\)[^.]/);
   });
 
   it('schema has category as z.enum with all required values', () => {
