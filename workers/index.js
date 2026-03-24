@@ -1,6 +1,13 @@
 import { handleHeatGet, handleHeatPost } from './heat.js';
 import { handleSearch } from './search.js';
 
+/** CORS headers shared between preflight and all JSON responses. */
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 /**
  * Create a JSON response with CORS headers.
  * @param {object} body - Response body
@@ -12,9 +19,7 @@ function jsonResponse(body, status = 200) {
     status,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      ...CORS_HEADERS,
     },
   });
 }
@@ -30,7 +35,9 @@ function extractHeatSlug(pathname) {
 }
 
 export default {
-  async fetch(request, env, ctx) {
+  // ctx is unused here but required by the Workers fetch handler signature
+  // (reserved for ctx.waitUntil() in future background tasks).
+  async fetch(request, env, ctx) { // eslint-disable-line no-unused-vars
     const url = new URL(request.url);
     const { pathname } = url;
     const method = request.method;
@@ -39,11 +46,7 @@ export default {
     if (method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
+        headers: { ...CORS_HEADERS },
       });
     }
 
@@ -52,7 +55,7 @@ export default {
       if (pathname === '/api/search' && method === 'GET') {
         const query = url.searchParams.get('q') || '';
         const category = url.searchParams.get('category') || undefined;
-        const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+        const limit = parseInt(url.searchParams.get('limit') || '10', 10) || 10;
         const result = await handleSearch({ query, category, limit, env });
         return jsonResponse(result);
       }
@@ -73,7 +76,7 @@ export default {
 
       // No route matched
       return jsonResponse({ error: 'Not found' }, 404);
-    } catch (err) {
+    } catch {
       return jsonResponse({ error: 'Internal server error' }, 500);
     }
   },
