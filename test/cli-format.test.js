@@ -39,7 +39,9 @@ describe('formatSearchResults', () => {
     expect(output).toContain('Test Spec Two');
     // Should contain chili emoji
     expect(output).toContain('\u{1F336}\u{FE0F}');
-    // Empty results
+  });
+
+  it('renders No results found for empty text format', () => {
     const empty = formatSearchResults([], 'text');
     expect(empty).toContain('No results found');
   });
@@ -83,9 +85,8 @@ describe('formatSpec', () => {
   it('renders markdown with header and bold labels', () => {
     const output = formatSpec(sampleSpec, 'markdown');
     expect(output).toContain('# My Test Spec');
-    expect(output).toContain('**');
-    expect(output).toContain('patterns');
-    expect(output).toContain('mild');
+    expect(output).toContain('**Category:** patterns');
+    expect(output).toContain('**Heat:** mild');
     expect(output).toContain('This is the spec content.');
   });
 });
@@ -109,13 +110,11 @@ describe('formatSpecList', () => {
     expect(parsed[0].title).toBe('Alpha Spec');
   });
 
-  it('renders markdown with numbered headings', () => {
+  it('renders markdown with numbered bold items', () => {
     const output = formatSpecList(sampleSpecList, 'markdown');
-    expect(output).toContain('Alpha Spec');
-    expect(output).toContain('Beta Spec');
-    expect(output).toContain('Gamma Spec');
-    // Should use markdown formatting
-    expect(output).toMatch(/#{1,3}/);
+    expect(output).toContain('1. **Alpha Spec**');
+    expect(output).toContain('2. **Beta Spec**');
+    expect(output).toContain('3. **Gamma Spec**');
   });
 });
 

@@ -6,7 +6,7 @@ const CHILI = '\u{1F336}\uFE0F';
  * @returns {string}
  */
 function chilies(level) {
-  return CHILI.repeat(Math.max(0, level));
+  return CHILI.repeat(Math.max(0, level ?? 0));
 }
 
 /**
@@ -68,7 +68,7 @@ export function formatSpec(spec, format) {
     lines.push('---');
     lines.push('');
     if (spec.content) lines.push(spec.content);
-    return lines.join('\n');
+    return lines.join('\n').trimEnd();
   }
 
   // text format
@@ -99,7 +99,7 @@ export function formatSpecList(specs, format) {
     specs.forEach((spec, i) => {
       lines.push(`${i + 1}. **${spec.title}**`);
     });
-    return lines.join('\n');
+    return lines.join('\n').trimEnd();
   }
 
   // text format
@@ -126,7 +126,7 @@ export function formatCategories(categories, format) {
     categories.forEach((cat) => {
       lines.push(`- ${cat}`);
     });
-    return lines.join('\n');
+    return lines.join('\n').trimEnd();
   }
 
   // text format — bullet list
