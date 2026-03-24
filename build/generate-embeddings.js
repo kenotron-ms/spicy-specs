@@ -101,6 +101,12 @@ async function main() {
     process.exit(1);
   }
 
+  const cfApiToken = process.env.CLOUDFLARE_API_TOKEN;
+  if (!cfApiToken) {
+    console.error('Error: CLOUDFLARE_API_TOKEN environment variable is required');
+    process.exit(1);
+  }
+
   console.log('Parsing specs from specs/ directory...');
   const specs = parseAllSpecs('specs');
   console.log(`Found ${specs.length} spec(s)`);
@@ -115,7 +121,6 @@ async function main() {
   console.log(`Generated ${embeddings.length} embedding(s)`);
 
   console.log('Upserting to Cloudflare Vectorize...');
-  const cfApiToken = process.env.CLOUDFLARE_API_TOKEN;
   const vectorizeUpsert = async (vectors) => {
     const res = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/vectorize/v2/indexes/${indexId}/upsert`,
