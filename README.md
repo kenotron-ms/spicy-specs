@@ -67,7 +67,7 @@ Your markdown content here.
 
 - Astro SSG setup (`astro.config.mjs`, content collections)
 - Library index page (`/`) with spec grid
-- Dynamic spec pages (`/specs/[slug]`)
+- Dynamic spec pages (`/e/[slug]`)
 - Design tokens applied across all layouts and styles
 
 ## License
