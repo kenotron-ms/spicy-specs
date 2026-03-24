@@ -136,10 +136,9 @@ describe('formatCategories', () => {
 
   it('renders markdown with list formatting', () => {
     const output = formatCategories(sampleCategories, 'markdown');
-    expect(output).toContain('patterns');
-    expect(output).toContain('anti-patterns');
-    expect(output).toContain('primitives');
-    // Should use markdown list syntax
-    expect(output).toMatch(/[-*]|#{1,3}/);
+    expect(output).toContain('# Categories');
+    expect(output).toContain('- patterns');
+    expect(output).toContain('- anti-patterns');
+    expect(output).toContain('- primitives');
   });
 });
