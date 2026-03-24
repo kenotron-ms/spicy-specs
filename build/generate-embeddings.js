@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
+import { embedText } from '../workers/search.js';
 
 /**
  * Recursively find all .md files in a directory.
@@ -38,4 +39,43 @@ export function parseAllSpecs(specsDir) {
       textToEmbed: `${data.title}: ${data.summary}`,
     };
   });
+}
+
+/**
+ * Generate embeddings for an array of parsed specs.
+ * @param {Array} specs - Parsed spec objects from parseAllSpecs
+ * @param {string} apiKey - OpenAI API key
+ * @param {Function} [fetcher=fetch] - Fetch function (injectable for testing)
+ * @returns {Promise<Array<{slug: string, vector: number[], metadata: object}>>}
+ */
+export async function generateEmbeddings(specs, apiKey, fetcher = fetch) {
+  const results = [];
+  for (const spec of specs) {
+    const vector = await embedText(spec.textToEmbed, apiKey, fetcher);
+    results.push({
+      slug: spec.slug,
+      vector,
+      metadata: {
+        title: spec.title,
+        category: spec.category,
+        summary: spec.summary,
+      },
+    });
+  }
+  return results;
+}
+
+/**
+ * Upsert embedding vectors to Cloudflare Vectorize.
+ * @param {Array} embeddings - Array of {slug, vector, metadata} objects
+ * @param {Function} vectorizeUpsert - The Vectorize upsert function
+ * @returns {Promise<void>}
+ */
+export async function upsertToVectorize(embeddings, vectorizeUpsert) {
+  const vectors = embeddings.map((e) => ({
+    id: e.slug,
+    values: e.vector,
+    metadata: e.metadata,
+  }));
+  await vectorizeUpsert(vectors);
 }
