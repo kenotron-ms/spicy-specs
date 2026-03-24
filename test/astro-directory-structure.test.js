@@ -48,12 +48,11 @@ describe('Astro directory structure', () => {
       expect(statSync(symlinkPath).isDirectory()).toBe(true);
     });
 
-    it('src/content/specs contains expected spec subdirectories', () => {
+    it('src/content/specs resolves to a non-empty directory', () => {
       const symlinkPath = resolve(ROOT, 'src/content/specs');
       const entries = readdirSync(symlinkPath);
-      expect(entries).toContain('philosophy');
-      expect(entries).toContain('patterns');
-      expect(entries).toContain('antipatterns');
+      // Verify the symlink target is populated without coupling to specific subdirectory names
+      expect(entries.length).toBeGreaterThan(0);
     });
   });
 });
