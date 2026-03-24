@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Curated library of specs, patterns, and anti-patterns for AI agents",
   "type": "module",
+  "private": true,
   "scripts": {
     "build": "node build/generate.js",
     "test": "vitest run",
