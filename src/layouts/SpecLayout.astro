@@ -1,0 +1,119 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  category: string;
+  spiceLevel?: number;
+  tags?: string[];
+  summary: string;
+  created: string;
+  updated: string;
+  author: string;
+}
+
+const { title, category, spiceLevel, tags, summary, created, updated, author } = Astro.props;
+
+function getChiliRating(level?: number): string {
+  if (!level) return '';
+  return '🌶️'.repeat(Math.min(level, 5));
+}
+
+const chiliRating = getChiliRating(spiceLevel);
+---
+
+<BaseLayout title={title} description={summary}>
+  <article class="spec-page">
+    <header class="spec-header">
+      <div class="spec-meta">
+        <span class={`badge badge-${category}`}>{category}</span>
+        {chiliRating && <span class="chili-rating">{chiliRating}</span>}
+      </div>
+      <h1>{title}</h1>
+      <p class="spec-summary">{summary}</p>
+      <div class="spec-details">
+        <span>By {author}</span>
+        <span>Created: {created}</span>
+        {updated !== created && <span>Updated: {updated}</span>}
+      </div>
+      {tags && tags.length > 0 && (
+        <div class="spec-tags">
+          {tags.map((tag) => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+    <div class="spec-content">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .spec-page {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .spec-header {
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--spicy-red);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .spec-meta {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .spec-summary {
+    font-size: 1.25rem;
+    color: var(--dark);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .spec-details {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-md);
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .spec-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+  }
+
+  .tag {
+    background-color: rgba(168, 50, 50, 0.1);
+    color: var(--spicy-red);
+    font-size: 0.8rem;
+    padding: 0.15em 0.5em;
+    border-radius: 4px;
+  }
+
+  :global(.spec-content h2) {
+    margin-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--gold);
+  }
+
+  :global(.spec-content ul),
+  :global(.spec-content ol) {
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  :global(.spec-content li) {
+    margin-bottom: var(--spacing-xs);
+  }
+</style>
