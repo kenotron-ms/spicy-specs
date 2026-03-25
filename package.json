@@ -4,6 +4,9 @@
   "description": "Curated library of specs, patterns, and anti-patterns for AI agents",
   "type": "module",
   "private": true,
+  "bin": {
+    "spicy-specs": "./cli/spicy-specs.js"
+  },
   "scripts": {
     "build": "astro build",
     "dev": "astro dev",
@@ -11,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev:workers": "wrangler dev workers/index.js",
-    "embeddings": "node build/generate-embeddings.js"
+    "embeddings": "node build/generate-embeddings.js",
+    "mcp:start": "node mcp/server.js"
   },
   "keywords": [
     "specs",
