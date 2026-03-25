@@ -1,0 +1,351 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const query = Astro.url.searchParams.get('q') || '';
+const filterCategory = Astro.url.searchParams.get('filter') || 'all';
+
+const allSpecs = await getCollection('specs');
+
+// Filter specs based on search query
+let results = allSpecs;
+
+if (query) {
+  const searchLower = query.toLowerCase();
+  results = allSpecs.filter((spec) => {
+    const title = spec.data.title.toLowerCase();
+    const summary = spec.data.summary.toLowerCase();
+    const tags = spec.data.tags?.join(' ').toLowerCase() || '';
+    const author = spec.data.author.toLowerCase();
+    
+    return title.includes(searchLower) ||
+           summary.includes(searchLower) ||
+           tags.includes(searchLower) ||
+           author.includes(searchLower);
+  });
+}
+
+// Filter by category if not 'all'
+if (filterCategory !== 'all') {
+  results = results.filter(spec => spec.data.category === filterCategory);
+}
+
+function getChiliRating(level?: number): string {
+  if (!level) return '';
+  return '🌶️'.repeat(Math.min(level, 5));
+}
+---
+
+<BaseLayout title="Search Results">
+  <div class="search-results-page">
+    <!-- Search filter bar -->
+    <div class="search-filter-bar">
+      <form action="/search-results" method="get" class="search-container">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <input 
+          type="search"
+          name="q"
+          class="search-input" 
+          placeholder="SEARCH ENTRIES..."
+          value={query}
+          aria-label="Search specifications"
+        />
+      </form>
+
+      <div class="filter-container">
+        <span class="entry-count">SHOWING {results.length} ENTRIES</span>
+        <div class="filter-buttons">
+          <a href={`/search-results?q=${query}&filter=all`} class={`filter-btn ${filterCategory === 'all' ? 'active' : ''}`}>ALL</a>
+          <a href={`/search-results?q=${query}&filter=spec`} class={`filter-btn ${filterCategory === 'spec' ? 'active' : ''}`}>SPEC</a>
+          <a href={`/search-results?q=${query}&filter=antipattern`} class={`filter-btn ${filterCategory === 'antipattern' ? 'active' : ''}`}>ANTI-PATTERN</a>
+          <a href={`/search-results?q=${query}&filter=reference-app`} class={`filter-btn ${filterCategory === 'reference-app' ? 'active' : ''}`}>REFERENCE APP</a>
+          <a href={`/search-results?q=${query}&filter=pattern`} class={`filter-btn ${filterCategory === 'pattern' ? 'active' : ''}`}>PATTERN</a>
+          <a href={`/search-results?q=${query}&filter=philosophy`} class={`filter-btn ${filterCategory === 'philosophy' ? 'active' : ''}`}>PHILOSOPHY</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results list -->
+    <div class="results-list">
+      {results.length === 0 ? (
+        <div class="no-results">
+          <p>No results found for "{query}"</p>
+          <a href="/" class="back-link">← Back to Library</a>
+        </div>
+      ) : (
+        results.map((spec, index) => (
+          <a href={`/e/${spec.slug}`} class="result-row">
+            <div class={`result-row-content ${index % 2 === 0 ? 'row-odd' : 'row-even'}`}>
+              <!-- Decorative icon -->
+              <svg class="row-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="10" cy="10" r="3" fill="currentColor"/>
+              </svg>
+
+              <!-- Category badge -->
+              <span class={`row-badge badge-${spec.data.category}`}>{spec.data.category.toUpperCase()}</span>
+
+              <!-- Title and description (inline) -->
+              <div class="row-main">
+                <span class="row-title">{spec.data.title}</span>
+                <span class="row-description"> — {spec.data.summary}</span>
+              </div>
+
+              <!-- Metadata block (right-aligned) -->
+              <div class="row-meta">
+                <div class="meta-code">{spec.data.spiceLevel ? getChiliRating(spec.data.spiceLevel) : ''} {spec.data.updated}</div>
+                <div class="meta-author">{spec.data.author}</div>
+              </div>
+            </div>
+            <div class="result-divider"></div>
+          </a>
+        ))
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .search-results-page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Search filter bar - reuse library page styles */
+  .search-filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--section-gap);
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-card);
+  }
+
+  .search-container {
+    position: relative;
+    flex: 0 0 auto;
+    width: 400px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: var(--border-width-thin) solid var(--border-card);
+    border-radius: var(--radius-input);
+    color: var(--text-body);
+    transition: all 0.2s ease;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-bright-red);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 0 3px rgba(138, 39, 39, 0.1);
+  }
+
+  .filter-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .entry-count {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: var(--font-body);
+    font-size: var(--text-tiny);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border: var(--border-width-thin) solid var(--border-card);
+    border-radius: var(--radius-badge);
+    background: transparent;
+    color: var(--text-body);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-bright-red);
+    color: var(--color-bright-red);
+    transform: translateY(-1px);
+  }
+
+  .filter-btn.active {
+    background: var(--color-bright-red);
+    color: white;
+    border-color: var(--color-bright-red);
+  }
+
+  /* Results list */
+  .results-list {
+    background: rgba(255, 255, 255, 0.6);
+    border: var(--border-width) solid var(--border-card);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+
+  .result-row {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.2s ease;
+  }
+
+  .result-row:hover .result-row-content {
+    background-color: rgba(138, 39, 39, 0.05);
+  }
+
+  .result-row-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    transition: background-color 0.2s ease;
+  }
+
+  .row-odd {
+    background: rgba(244, 228, 193, 0.4);
+  }
+
+  .row-even {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Row icon */
+  .row-icon {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  /* Category badge */
+  .row-badge {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-badge);
+    font-family: var(--font-body);
+    font-size: var(--text-tiny);
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+  }
+
+  /* Main content area (title + description) */
+  .row-main {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .row-title {
+    font-family: var(--font-display);
+    font-size: var(--text-heading-sm);
+    font-weight: var(--weight-bold);
+    color: var(--text-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .row-description {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--text-body);
+  }
+
+  /* Metadata block (right-aligned) */
+  .row-meta {
+    flex-shrink: 0;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-size: var(--text-tiny);
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .meta-code {
+    font-weight: var(--weight-bold);
+  }
+
+  .meta-author {
+    opacity: 0.8;
+  }
+
+  /* Row divider */
+  .result-divider {
+    height: 1px;
+    background: var(--border-divider);
+    opacity: 0.5;
+  }
+
+  /* No results state */
+  .no-results {
+    padding: var(--spacing-xl);
+    text-align: center;
+  }
+
+  .no-results p {
+    font-family: var(--font-body);
+    font-size: var(--text-heading-md);
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .back-link {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    color: var(--color-bright-red);
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: var(--border-width) solid var(--color-bright-red);
+    border-radius: var(--radius-card);
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+
+  .back-link:hover {
+    background: var(--color-bright-red);
+    color: white;
+  }
+</style>

@@ -1,29 +1,83 @@
 /* ==========================================================================
-   Design Tokens
+   Design Tokens - Vintage Spicy Specs Theme
    ========================================================================== */
 
 :root {
-  /* Colors */
-  --spicy-red: #A83232;
-  --parchment: #EFE7CD;
-  --gold: #C9975B;
-  --dark: #2D2D2D;
-  --text-muted: #666;
+  /* Color Palette - Extracted from mockup */
+  --color-parchment: #f4e4c1;
+  --color-deep-red: #7a1f1f;
+  --color-bright-red: #8a2727;
+  --color-forest-green: #2f5c2f;
+  --color-aged-gold: #c49a45;
+  --color-dark-brown: #332211;
+  --color-medium-brown: #554433;
+  --color-light-brown: #887766;
+  --color-border-brown: #443322;
+  --color-near-black: #222222;
+  --color-shadow: rgba(68, 51, 34, 0.3);
+
+  /* Semantic Colors */
+  --bg-main: var(--color-parchment);
+  --bg-header: var(--color-deep-red);
+  --text-heading: var(--color-dark-brown);
+  --text-body: var(--color-medium-brown);
+  --text-muted: var(--color-light-brown);
+  --text-on-dark: #f4e4c1;
+  --border-card: var(--color-border-brown);
+  --border-divider: var(--color-light-brown);
+
+  /* Badge Colors */
+  --badge-spec: var(--color-bright-red);
+  --badge-pattern: var(--color-aged-gold);
+  --badge-antipattern: var(--color-forest-green);
+  --badge-philosophy: var(--color-near-black);
+  --badge-reference-app: var(--color-aged-gold);
 
   /* Typography */
-  --font-display: Georgia, serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Merriweather', 'Georgia', serif;
   --font-code: 'Courier New', Courier, monospace;
 
-  /* Border radius */
-  --radius-sm: 4px;
+  /* Font Sizes */
+  --text-display-lg: 3rem;
+  --text-heading-lg: 1.75rem;
+  --text-heading-md: 1.5rem;
+  --text-heading-sm: 1.125rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-tiny: 0.75rem;
 
-  /* Spacing scale */
+  /* Font Weights */
+  --weight-normal: 400;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --line-tight: 1.2;
+  --line-normal: 1.5;
+
+  /* Spacing Scale */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
+
+  /* Layout Spacing */
+  --header-padding-y: 3rem;
+  --card-padding: 1.5rem;
+  --grid-gap: 2rem;
+  --section-gap: 3rem;
+
+  /* Border & Effects */
+  --border-width: 2px;
+  --border-width-thin: 1px;
+  --radius-card: 8px;
+  --radius-input: 16px;
+  --radius-badge: 4px;
+  --shadow-card: 0 6px 12px -2px var(--color-shadow);
+
+  /* Background Texture */
+  --texture-parchment: url('/assets/parchment-background-texture.png');
 }
 
 /* ==========================================================================
@@ -37,14 +91,18 @@
 }
 
 /* ==========================================================================
-   Base Element Styles
+   Base Element Styles - Layer 1: Background & Foundation
    ========================================================================== */
 
 body {
-  font-family: var(--font-ui);
-  color: var(--dark);
-  background-color: var(--parchment);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  font-weight: var(--weight-normal);
+  color: var(--text-body);
+  background-color: var(--bg-main);
+  background-image: var(--texture-parchment);
+  background-size: cover;
+  background-attachment: fixed;
+  line-height: var(--line-normal);
   margin: 0;
   padding: 0;
 }
@@ -58,27 +116,32 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
-  line-height: 1.2;
+  font-weight: var(--weight-bold);
+  color: var(--text-heading);
+  line-height: var(--line-tight);
   margin-top: 0;
 }
 
 h1 {
-  font-size: 2.5rem;
-  color: var(--spicy-red);
+  font-size: var(--text-display-lg);
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: var(--text-heading-lg);
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: var(--text-heading-md);
+}
+
+h4 {
+  font-size: var(--text-heading-sm);
 }
 
 /* Links */
 
 a {
-  color: var(--spicy-red);
+  color: var(--color-bright-red);
   text-decoration: none;
 }
 
@@ -92,13 +155,13 @@ code {
   font-family: var(--font-code);
   background: rgba(0, 0, 0, 0.06);
   padding: 0.15em 0.35em;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-badge);
   font-size: 0.9em;
 }
 
 pre {
-  background-color: var(--dark);
-  color: var(--parchment);
+  background-color: var(--color-dark-brown);
+  color: var(--bg-main);
   padding: var(--spacing-md);
   border-radius: 6px;
   overflow-x: auto;
@@ -128,37 +191,33 @@ pre code {
 
 .badge {
   display: inline-block;
-  padding: 0.2em 0.7em;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-badge);
+  font-size: var(--text-tiny);
+  font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: white;
 }
 
 /* Category badge colors */
 
 .badge-spec {
-  background-color: #3B82F6;
-  color: #fff;
+  background-color: var(--badge-spec);
 }
 
 .badge-pattern {
-  background-color: #10B981;
-  color: #fff;
+  background-color: var(--badge-pattern);
 }
 
 .badge-antipattern {
-  background-color: #EF4444;
-  color: #fff;
+  background-color: var(--badge-antipattern);
 }
 
 .badge-philosophy {
-  background-color: var(--gold);
-  color: var(--dark);
+  background-color: var(--badge-philosophy);
 }
 
 .badge-reference-app {
-  background-color: #8B5CF6;
-  color: #fff;
+  background-color: var(--badge-reference-app);
 }

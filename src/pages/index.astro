@@ -20,9 +20,41 @@ function getChiliRating(level?: number): string {
     <p>Curated specs, patterns, and anti-patterns for building better AI agents.</p>
   </div>
 
+  <div class="controls-bar">
+    <form action="/search-results" method="get" class="search-container">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <input 
+        type="search"
+        name="q"
+        class="search-input" 
+        placeholder="SEARCH ENTRIES..."
+        aria-label="Search specifications"
+      />
+    </form>
+
+    <div class="filter-container">
+      <span class="entry-count">SHOWING {specs.length} ENTRIES</span>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">ALL</button>
+        <button class="filter-btn" data-filter="spec">SPEC</button>
+        <button class="filter-btn" data-filter="antipattern">ANTI-PATTERN</button>
+        <button class="filter-btn" data-filter="reference-app">REFERENCE APP</button>
+        <button class="filter-btn" data-filter="pattern">PATTERN</button>
+        <button class="filter-btn" data-filter="philosophy">PHILOSOPHY</button>
+      </div>
+    </div>
+  </div>
+
   <div class="spec-grid">
     {specs.map((spec) => (
-      <article class="spec-card">
+      <article class="spec-card" 
+               data-title={spec.data.title.toLowerCase()}
+               data-summary={spec.data.summary.toLowerCase()}
+               data-category={spec.data.category}
+               data-tags={spec.data.tags?.join(' ').toLowerCase() || ''}
+               data-author={spec.data.author.toLowerCase()}>
         <div class="card-header">
           <span class={`badge badge-${spec.data.category}`}>{spec.data.category}</span>
           {spec.data.spiceLevel && (
@@ -31,7 +63,7 @@ function getChiliRating(level?: number): string {
         </div>
 
         <h2>
-          <a href={`/e/${spec.slug}`}>{spec.data.title}</a>
+          <a href={`/e/${spec.id}`}>{spec.data.title}</a>
         </h2>
 
         <p class="card-summary">{spec.data.summary}</p>
@@ -56,70 +88,230 @@ function getChiliRating(level?: number): string {
 <style>
   .library-intro {
     text-align: center;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--section-gap);
   }
 
   .library-intro h1 {
-    font-size: 3rem;
-    color: var(--dark);
+    font-family: var(--font-display);
+    font-size: var(--text-display-lg);
+    font-weight: var(--weight-bold);
+    color: var(--text-heading);
     margin-bottom: var(--spacing-sm);
   }
 
   .library-intro p {
-    color: var(--dark);
-    font-size: 1.1rem;
+    font-family: var(--font-body);
+    color: var(--text-body);
+    font-size: var(--text-heading-sm);
+    line-height: var(--line-normal);
+  }
+
+  /* Controls Bar: Search + Filters */
+  .controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--grid-gap);
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+  }
+
+  /* Search Bar */
+  .search-container {
+    position: relative;
+    flex: 0 0 auto;
+    width: 300px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: var(--border-width-thin) solid var(--border-card);
+    border-radius: var(--radius-input);
+    color: var(--text-body);
+    transition: all 0.2s ease;
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-bright-red);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(138, 39, 39, 0.1);
+  }
+
+  /* Filter Container */
+  .filter-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .entry-count {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* Filter Buttons */
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: var(--font-body);
+    font-size: var(--text-tiny);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border: var(--border-width-thin) solid var(--border-card);
+    border-radius: var(--radius-badge);
+    background: transparent;
+    color: var(--text-body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-bright-red);
+    color: var(--color-bright-red);
+    transform: translateY(-1px);
+  }
+
+  .filter-btn.active {
+    background: var(--color-bright-red);
+    color: white;
+    border-color: var(--color-bright-red);
+  }
+
+  .filter-btn.active:hover {
+    background: var(--color-deep-red);
+    border-color: var(--color-deep-red);
+    transform: translateY(0);
   }
 
   .spec-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  @media (max-width: 1600px) {
+    .spec-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .spec-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .spec-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .spec-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .spec-card {
-    background: white;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: var(--spacing-md);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255, 255, 255, 0.85);
+    border: var(--border-width) solid var(--border-card);
+    border-radius: var(--radius-card);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    position: relative;
+  }
+
+  .spec-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--border-card);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
   }
 
   .spec-card:hover {
-    border-color: var(--spicy-red);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px var(--color-shadow);
   }
 
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: var(--spacing-xs);
   }
 
   .chili-rating {
-    font-size: 1rem;
+    font-size: 1.2rem;
+    line-height: 1;
   }
 
   h2 {
     margin: 0;
-    font-size: 1.2rem;
+    font-family: var(--font-display);
+    font-size: var(--text-heading-lg);
+    font-weight: var(--weight-bold);
+    line-height: var(--line-tight);
   }
 
   h2 a {
-    color: var(--dark);
+    color: var(--text-heading);
     text-decoration: none;
+    transition: color 0.2s ease;
   }
 
   h2 a:hover {
-    color: var(--spicy-red);
+    color: var(--color-bright-red);
   }
 
   .card-summary {
-    color: var(--dark);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-family: var(--font-body);
+    color: var(--text-body);
+    font-size: var(--text-body);
+    line-height: var(--line-normal);
     margin: 0;
     flex: 1;
   }
@@ -127,9 +319,10 @@ function getChiliRating(level?: number): string {
   .card-meta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
-    color: #666;
-    border-top: 1px solid #eee;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--text-muted);
+    border-top: var(--border-width-thin) solid var(--border-divider);
     padding-top: var(--spacing-sm);
     margin-top: auto;
   }
@@ -141,10 +334,100 @@ function getChiliRating(level?: number): string {
   }
 
   .tag {
-    font-size: 0.8rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    background: rgba(168, 50, 50, 0.1);
-    color: var(--spicy-red);
+    font-family: var(--font-body);
+    font-size: var(--text-tiny);
+    font-weight: var(--weight-bold);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-badge);
+    background: rgba(138, 39, 39, 0.15);
+    color: var(--color-bright-red);
+    border: 1px solid rgba(138, 39, 39, 0.3);
+  }
+
+  /* Hidden state for filtered-out cards */
+  .spec-card.hidden {
+    display: none;
   }
 </style>
+
+<script>
+  // Search and filter functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const specCards = document.querySelectorAll('.spec-card');
+    const entryCount = document.querySelector('.entry-count');
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    // Update visible count
+    function updateCount() {
+      const visibleCards = document.querySelectorAll('.spec-card:not(.hidden)');
+      if (entryCount) {
+        entryCount.textContent = `SHOWING ${visibleCards.length} ENTRIES`;
+      }
+    }
+
+    // Filter cards based on search and category
+    function filterCards() {
+      let visibleCount = 0;
+      
+      specCards.forEach((card) => {
+        const htmlCard = card as HTMLElement;
+        const title = htmlCard.dataset.title || '';
+        const summary = htmlCard.dataset.summary || '';
+        const category = htmlCard.dataset.category || '';
+        const tags = htmlCard.dataset.tags || '';
+        const author = htmlCard.dataset.author || '';
+
+        // Check search match
+        const searchText = currentSearch.toLowerCase();
+        const matchesSearch = !currentSearch || 
+          title.includes(searchText) ||
+          summary.includes(searchText) ||
+          tags.includes(searchText) ||
+          author.includes(searchText);
+
+        // Check category filter
+        const matchesFilter = currentFilter === 'all' || category === currentFilter;
+
+        // Show/hide card
+        if (matchesSearch && matchesFilter) {
+          htmlCard.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          htmlCard.classList.add('hidden');
+        }
+      });
+
+      updateCount();
+    }
+
+    // Search input handler
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = (e.target as HTMLInputElement).value;
+        filterCards();
+      });
+    }
+
+    // Filter button handlers
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        // Remove active from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active to clicked button
+        button.classList.add('active');
+        
+        // Update filter
+        currentFilter = (button as HTMLElement).dataset.filter || 'all';
+        filterCards();
+      });
+    });
+
+    // Initial count
+    updateCount();
+  });
+</script>

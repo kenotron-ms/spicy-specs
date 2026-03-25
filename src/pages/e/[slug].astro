@@ -1,17 +1,17 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import SpecLayout from '../../layouts/SpecLayout.astro';
 
 export async function getStaticPaths() {
   const specs = await getCollection('specs');
   return specs.map((spec) => ({
-    params: { slug: spec.slug },
+    params: { slug: spec.id },
     props: { spec },
   }));
 }
 
 const { spec } = Astro.props;
-const { Content } = await spec.render();
+const { Content } = await render(spec);
 ---
 
 <SpecLayout
