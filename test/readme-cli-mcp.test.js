@@ -4,19 +4,18 @@ import { resolve } from 'path';
 
 const ROOT = new URL('..', import.meta.url).pathname;
 
+let readme;
+beforeAll(() => {
+  readme = readFileSync(resolve(ROOT, 'README.md'), 'utf-8');
+});
+
 describe('README CLI Tool section', () => {
-  let readme;
-
-  beforeAll(() => {
-    readme = readFileSync(resolve(ROOT, 'README.md'), 'utf-8');
-  });
-
   it('contains the "## CLI Tool" heading', () => {
     expect(readme).toContain('## CLI Tool');
   });
 
   it('contains usage examples for search command', () => {
-    expect(readme).toMatch(/spicy.*search/i);
+    expect(readme).toContain('spicy search');
   });
 
   it('contains usage example for search with category filter', () => {
@@ -24,7 +23,7 @@ describe('README CLI Tool section', () => {
   });
 
   it('contains usage example for get by slug command', () => {
-    expect(readme).toMatch(/spicy.*get/i);
+    expect(readme).toContain('spicy get');
   });
 
   it('contains usage example for list all command', () => {
@@ -58,11 +57,6 @@ describe('README CLI Tool section', () => {
 });
 
 describe('README MCP Server section', () => {
-  let readme;
-
-  beforeAll(() => {
-    readme = readFileSync(resolve(ROOT, 'README.md'), 'utf-8');
-  });
 
   it('contains the "## MCP Server" heading', () => {
     expect(readme).toContain('## MCP Server');
