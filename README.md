@@ -116,6 +116,92 @@ See `.env.example` for all required variables. For GitHub Actions, add these as 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_VECTORIZE_INDEX_ID`
 
+## CLI Tool
+
+Install globally or use via `npx`:
+
+```bash
+npm install -g spicy-specs-cli
+# or use directly
+npx spicy-specs <command>
+```
+
+### Usage
+
+```bash
+# Search specs
+spicy search "tdd patterns"
+
+# Search with category filter
+spicy search "testing" --category patterns
+
+# Get a spec by slug
+spicy get simplicity-first
+
+# List all specs
+spicy list
+
+# List by category
+spicy list --category antipatterns
+
+# Show all categories
+spicy categories
+```
+
+### Output Formats
+
+| Flag | Format | Use Case |
+|------|--------|----------|
+| _(default)_ | Text with chili 🌶️ emojis | Human-readable terminal output |
+| `--json` | JSON | Piping to other tools |
+| `--markdown` | Markdown | Agent consumption |
+
+```bash
+# JSON output for piping
+spicy search "testing" --json | jq '.[] | .slug'
+
+# Markdown output for agents
+spicy get simplicity-first --markdown
+```
+
+### Configuration
+
+Create `~/.spicy-specs/config.json` to configure defaults:
+
+```json
+{
+  "apiBase": "https://spicy-specs.com"
+}
+```
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `apiBase` | `https://spicy-specs.com` | Base URL for the Spicy Specs API |
+
+## MCP Server
+
+The MCP (Model Context Protocol) server exposes spec search and retrieval over JSON-RPC 2.0 for AI agent integration.
+
+### Starting
+
+```bash
+npm run mcp:start
+```
+
+### Available Tools
+
+| Tool | Parameters | Description |
+|------|-----------|-------------|
+| `search_specs` | `query` (required), `category` (optional), `limit` (optional) | Semantic search across specs |
+| `get_spec` | `slug` (required) | Get a specific spec by slug |
+| `list_specs` | `category` (optional) | List all specs, optionally filtered by category |
+
+### Protocol
+
+- **JSON-RPC 2.0** over stdin/stdout (ndjson)
+- Each request/response is a newline-delimited JSON object
+- Compatible with any MCP-aware AI agent or tool
+
 ## License
 
 MIT
