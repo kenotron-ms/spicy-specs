@@ -89,6 +89,16 @@ describe('formatSpec', () => {
     expect(output).toContain('**Heat:** mild');
     expect(output).toContain('This is the spec content.');
   });
+
+  it('handles spec with no chiliLevel — text title has no leading space', () => {
+    const out = formatSpec({ title: 'Bare Spec' }, 'text');
+    expect(out.startsWith('Bare Spec')).toBe(true);
+  });
+
+  it('handles spec with null chiliLevel — text Spice line not emitted', () => {
+    const out = formatSpec({ title: 'Null Chili', chiliLevel: null }, 'text');
+    expect(out).not.toContain('Spice:');
+  });
 });
 
 describe('formatSpecList', () => {

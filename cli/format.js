@@ -64,7 +64,7 @@ export function formatSpec(spec, format) {
     const lines = [`# ${spec.title}`, ''];
     if (spec.category) lines.push(`**Category:** ${spec.category}`);
     if (spec.heat) lines.push(`**Heat:** ${spec.heat}`);
-    if (spec.chiliLevel !== undefined) lines.push(`**Spice:** ${chilies(spec.chiliLevel)} (${spec.chiliLevel})`);
+    if (spec.chiliLevel != null) lines.push(`**Spice:** ${chilies(spec.chiliLevel)} (${spec.chiliLevel})`);
     lines.push('');
     lines.push('---');
     lines.push('');
@@ -74,11 +74,12 @@ export function formatSpec(spec, format) {
 
   // text format
   const lines = [];
-  lines.push(`${chilies(spec.chiliLevel || 0)} ${spec.title}`);
+  const chiliStr = chilies(spec.chiliLevel || 0);
+  lines.push(chiliStr ? `${chiliStr} ${spec.title}` : spec.title);
   lines.push('');
   if (spec.category) lines.push(`Category: ${spec.category.toUpperCase()}`);
   if (spec.heat) lines.push(`Heat: ${spec.heat}`);
-  if (spec.chiliLevel !== undefined) lines.push(`Spice: ${chilies(spec.chiliLevel)}`);
+  if (spec.chiliLevel != null) lines.push(`Spice: ${chilies(spec.chiliLevel)}`);
   lines.push('');
   if (spec.content) lines.push(spec.content);
   return lines.join('\n');
