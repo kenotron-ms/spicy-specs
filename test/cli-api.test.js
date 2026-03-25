@@ -41,40 +41,22 @@ function capturingFetcher() {
 
 describe('searchSpecs', () => {
   it('constructs correct URL with required query param', async () => {
-    let capturedUrl;
-    const fetcher = async (url) => {
-      capturedUrl = url;
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ results: [] }),
-        text: async () => '{"results":[]}',
-      };
-    };
+    const { fetcher, getUrl } = capturingFetcher();
 
     await searchSpecs({ query: 'simplicity', apiBase: API_BASE, fetcher });
 
-    expect(capturedUrl).toContain('/api/search');
-    expect(capturedUrl).toContain('q=simplicity');
+    expect(getUrl()).toContain('/api/search');
+    expect(getUrl()).toContain('q=simplicity');
   });
 
   it('includes optional category and limit params when provided', async () => {
-    let capturedUrl;
-    const fetcher = async (url) => {
-      capturedUrl = url;
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ results: [] }),
-        text: async () => '{"results":[]}',
-      };
-    };
+    const { fetcher, getUrl } = capturingFetcher();
 
     await searchSpecs({ query: 'test', category: 'philosophy', limit: 5, apiBase: API_BASE, fetcher });
 
-    expect(capturedUrl).toContain('q=test');
-    expect(capturedUrl).toContain('category=philosophy');
-    expect(capturedUrl).toContain('limit=5');
+    expect(getUrl()).toContain('q=test');
+    expect(getUrl()).toContain('category=philosophy');
+    expect(getUrl()).toContain('limit=5');
   });
 
   it('throws on non-ok response with status and body text', async () => {
@@ -176,37 +158,19 @@ describe('getSpec', () => {
 
 describe('listSpecs', () => {
   it('calls search with q=spec and limit=100', async () => {
-    let capturedUrl;
-    const fetcher = async (url) => {
-      capturedUrl = url;
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ results: [] }),
-        text: async () => '{"results":[]}',
-      };
-    };
+    const { fetcher, getUrl } = capturingFetcher();
 
     await listSpecs({ apiBase: API_BASE, fetcher });
 
-    expect(capturedUrl).toContain('q=spec');
-    expect(capturedUrl).toContain('limit=100');
+    expect(getUrl()).toContain('q=spec');
+    expect(getUrl()).toContain('limit=100');
   });
 
   it('includes category param when provided', async () => {
-    let capturedUrl;
-    const fetcher = async (url) => {
-      capturedUrl = url;
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ results: [] }),
-        text: async () => '{"results":[]}',
-      };
-    };
+    const { fetcher, getUrl } = capturingFetcher();
 
     await listSpecs({ category: 'philosophy', apiBase: API_BASE, fetcher });
 
-    expect(capturedUrl).toContain('category=philosophy');
+    expect(getUrl()).toContain('category=philosophy');
   });
 });
