@@ -8,8 +8,8 @@ import {
 
 // Sample test data
 const sampleResults = [
-  { title: 'Test Spec One', category: 'patterns', url: 'https://spicy-specs.com/specs/test-one' },
-  { title: 'Test Spec Two', category: 'anti-patterns', url: 'https://spicy-specs.com/specs/test-two' },
+  { title: 'Test Spec One', category: 'patterns', url: 'https://spicy-specs.com/specs/test-one', score: 2 },
+  { title: 'Test Spec Two', category: 'anti-patterns', url: 'https://spicy-specs.com/specs/test-two', score: 1 },
 ];
 
 const sampleSpec = {
@@ -21,9 +21,9 @@ const sampleSpec = {
 };
 
 const sampleSpecList = [
-  { title: 'Alpha Spec', slug: 'alpha-spec' },
-  { title: 'Beta Spec', slug: 'beta-spec' },
-  { title: 'Gamma Spec', slug: 'gamma-spec' },
+  { title: 'Alpha Spec', slug: 'alpha-spec', category: 'patterns' },
+  { title: 'Beta Spec', slug: 'beta-spec', category: 'primitives' },
+  { title: 'Gamma Spec', slug: 'gamma-spec', category: 'anti-patterns' },
 ];
 
 const sampleCategories = ['patterns', 'anti-patterns', 'primitives'];
@@ -37,8 +37,8 @@ describe('formatSearchResults', () => {
     expect(output).toContain('(PATTERNS)');
     expect(output).toContain('2.');
     expect(output).toContain('Test Spec Two');
-    // Should contain chili emoji
-    expect(output).toContain('\u{1F336}\u{FE0F}');
+    // Should contain per-item chili emojis based on score (score: 2 → two consecutive chilies)
+    expect(output).toContain('\u{1F336}\uFE0F\u{1F336}\uFE0F');
   });
 
   it('renders No results found for empty text format', () => {
@@ -92,14 +92,11 @@ describe('formatSpec', () => {
 });
 
 describe('formatSpecList', () => {
-  it('renders text format as numbered list', () => {
+  it('renders text format as numbered list with UPPERCASE category', () => {
     const output = formatSpecList(sampleSpecList, 'text');
-    expect(output).toContain('1.');
-    expect(output).toContain('Alpha Spec');
-    expect(output).toContain('2.');
-    expect(output).toContain('Beta Spec');
-    expect(output).toContain('3.');
-    expect(output).toContain('Gamma Spec');
+    expect(output).toContain('1. Alpha Spec (PATTERNS)');
+    expect(output).toContain('2. Beta Spec (PRIMITIVES)');
+    expect(output).toContain('3. Gamma Spec (ANTI-PATTERNS)');
   });
 
   it('renders valid JSON for json format', () => {
@@ -110,17 +107,18 @@ describe('formatSpecList', () => {
     expect(parsed[0].title).toBe('Alpha Spec');
   });
 
-  it('renders markdown with numbered bold items', () => {
+  it('renders markdown with ## N. Title heading per item', () => {
     const output = formatSpecList(sampleSpecList, 'markdown');
-    expect(output).toContain('1. **Alpha Spec**');
-    expect(output).toContain('2. **Beta Spec**');
-    expect(output).toContain('3. **Gamma Spec**');
+    expect(output).toContain('## 1. Alpha Spec');
+    expect(output).toContain('## 2. Beta Spec');
+    expect(output).toContain('## 3. Gamma Spec');
   });
 });
 
 describe('formatCategories', () => {
-  it('renders text format as bullet list', () => {
+  it('renders text format as bullet list under AVAILABLE CATEGORIES header', () => {
     const output = formatCategories(sampleCategories, 'text');
+    expect(output).toContain('AVAILABLE CATEGORIES');
     expect(output).toContain('•');
     expect(output).toContain('patterns');
     expect(output).toContain('anti-patterns');

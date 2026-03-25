@@ -42,8 +42,9 @@ export function formatSearchResults(data, format) {
   const lines = [`${CHILI} SPICY SPECS SEARCH RESULTS ${CHILI}`, ''];
   data.forEach((item, i) => {
     const category = item.category ? ` (${item.category.toUpperCase()})` : '';
+    const chiliStr = item.score ? ` ${chilies(item.score)}` : '';
     const arrow = item.url ? ` → ${item.url}` : '';
-    lines.push(`${i + 1}. ${item.title}${category}${arrow}`);
+    lines.push(`${i + 1}. ${item.title}${category}${chiliStr}${arrow}`);
   });
   return lines.join('\n');
 }
@@ -95,9 +96,9 @@ export function formatSpecList(specs, format) {
   }
 
   if (format === 'markdown') {
-    const lines = ['# Specs', ''];
+    const lines = [];
     specs.forEach((spec, i) => {
-      lines.push(`${i + 1}. **${spec.title}**`);
+      lines.push(`## ${i + 1}. ${spec.title}`);
     });
     return lines.join('\n').trimEnd();
   }
@@ -105,7 +106,8 @@ export function formatSpecList(specs, format) {
   // text format
   const lines = [`${CHILI} SPICY SPECS ${CHILI}`, ''];
   specs.forEach((spec, i) => {
-    lines.push(`${i + 1}. ${spec.title}`);
+    const category = spec.category ? ` (${spec.category.toUpperCase()})` : '';
+    lines.push(`${i + 1}. ${spec.title}${category}`);
   });
   return lines.join('\n');
 }
@@ -130,7 +132,7 @@ export function formatCategories(categories, format) {
   }
 
   // text format — bullet list
-  const lines = [`${CHILI} Categories:`, ''];
+  const lines = ['AVAILABLE CATEGORIES', ''];
   categories.forEach((cat) => {
     lines.push(`• ${cat}`);
   });
