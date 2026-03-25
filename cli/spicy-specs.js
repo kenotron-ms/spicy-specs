@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { fileURLToPath } from 'url';
 import { Command } from 'commander';
 import { getApiBase } from './config.js';
 import { searchSpecs, getSpec, listSpecs } from './api.js';
@@ -43,6 +44,9 @@ export function createProgram(deps = {}) {
     .option('--json', 'Output as JSON')
     .option('--markdown', 'Output as Markdown')
     .action(async (query, opts) => {
+      if (opts.category && !VALID_CATEGORIES.includes(opts.category)) {
+        throw new Error(`Invalid category "${opts.category}". Valid categories: ${VALID_CATEGORIES.join(', ')}`);
+      }
       const results = await searchSpecs({
         query,
         category: opts.category,
@@ -73,6 +77,9 @@ export function createProgram(deps = {}) {
     .option('--json', 'Output as JSON')
     .option('--markdown', 'Output as Markdown')
     .action(async (opts) => {
+      if (opts.category && !VALID_CATEGORIES.includes(opts.category)) {
+        throw new Error(`Invalid category "${opts.category}". Valid categories: ${VALID_CATEGORIES.join(', ')}`);
+      }
       const results = await listSpecs({ category: opts.category, apiBase, fetcher });
       print(formatSpecList(results, getFormat(opts)));
     });
@@ -90,11 +97,11 @@ export function createProgram(deps = {}) {
 }
 
 // Auto-run detection: run if executed directly, not when imported for testing
-const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/.*\//, ''));
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
   const program = createProgram();
   program.parseAsync(process.argv).catch((err) => {
-    console.error(`Error: ${err.message}`);
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   });
 }

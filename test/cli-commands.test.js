@@ -120,6 +120,44 @@ describe('CLI list command', () => {
   });
 });
 
+describe('CLI --category validation', () => {
+  it('rejects invalid --category value in search', async () => {
+    const deps = {
+      apiBase: 'https://example.com',
+      fetcher: async () => { throw new Error('should not be called'); },
+      print: () => {},
+    };
+    const program = createProgram(deps);
+    await expect(
+      program.parseAsync(['node', 'spicy-specs', 'search', 'test', '--category', 'bad-category'])
+    ).rejects.toThrow(/invalid category/i);
+  });
+
+  it('rejects invalid --category value in list', async () => {
+    const deps = {
+      apiBase: 'https://example.com',
+      fetcher: async () => { throw new Error('should not be called'); },
+      print: () => {},
+    };
+    const program = createProgram(deps);
+    await expect(
+      program.parseAsync(['node', 'spicy-specs', 'list', '--category', 'bad-category'])
+    ).rejects.toThrow(/invalid category/i);
+  });
+
+  it('accepts valid --category value in search', async () => {
+    const deps = {
+      apiBase: 'https://example.com',
+      fetcher: async () => ({ ok: true, json: async () => ({ results: [], took_ms: 5 }) }),
+      print: () => {},
+    };
+    const program = createProgram(deps);
+    await expect(
+      program.parseAsync(['node', 'spicy-specs', 'search', 'test', '--category', 'spec'])
+    ).resolves.toBeDefined();
+  });
+});
+
 describe('CLI categories command', () => {
   it('prints all available categories', async () => {
     const output = [];
