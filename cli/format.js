@@ -74,7 +74,7 @@ export function formatSpec(spec, format) {
 
   // text format
   const lines = [];
-  const chiliStr = chilies(spec.chiliLevel || 0);
+  const chiliStr = chilies(spec.chiliLevel);
   lines.push(chiliStr ? `${chiliStr} ${spec.title}` : spec.title);
   lines.push('');
   if (spec.category) lines.push(`Category: ${spec.category.toUpperCase()}`);

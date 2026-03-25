@@ -125,6 +125,15 @@ describe('formatSpecList', () => {
   });
 });
 
+describe('unknown format fallback', () => {
+  it('falls through to text format for unrecognised format strings', () => {
+    expect(formatSearchResults(sampleResults, 'xml')).toContain('SPICY SPECS SEARCH RESULTS');
+    expect(formatSpec(sampleSpec, 'xml')).toContain('My Test Spec');
+    expect(formatSpecList(sampleSpecList, 'xml')).toContain('1. Alpha Spec');
+    expect(formatCategories(sampleCategories, 'xml')).toContain('AVAILABLE CATEGORIES');
+  });
+});
+
 describe('formatCategories', () => {
   it('renders text format as bullet list under AVAILABLE CATEGORIES header', () => {
     const output = formatCategories(sampleCategories, 'text');
