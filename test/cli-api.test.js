@@ -21,6 +21,24 @@ function mockFetcher(responseBody, status = 200) {
   };
 }
 
+/**
+ * Creates a fetcher that captures the URL it was called with and returns an ok response.
+ * @returns {{ fetcher: Function, getUrl: () => string }} Fetcher and URL accessor
+ */
+function capturingFetcher() {
+  let capturedUrl;
+  const fetcher = async (url) => {
+    capturedUrl = url;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ results: [] }),
+      text: async () => '{"results":[]}',
+    };
+  };
+  return { fetcher, getUrl: () => capturedUrl };
+}
+
 describe('searchSpecs', () => {
   it('constructs correct URL with required query param', async () => {
     let capturedUrl;
