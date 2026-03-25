@@ -50,8 +50,8 @@ describe('Astro installation and configuration', () => {
       expect(pkg.dependencies?.marked).toBeUndefined();
     });
 
-    it('does NOT include "commander" in dependencies', () => {
-      expect(pkg.dependencies?.commander).toBeUndefined();
+    it('includes "commander" as a CLI dependency', () => {
+      expect(pkg.dependencies?.commander).toBeDefined();
     });
 
     it('retains "gray-matter" in dependencies', () => {
