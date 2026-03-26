@@ -26,40 +26,18 @@ const {
   <body>
 
     <header class="site-header">
-      <div class="header-inner">
-        <a href="/" class="header-logo-link" aria-label="Spicy Specs — Home">
-          <div class="header-emblem-group">
-            <!-- Ornamental diamond frame (transparent, renders cream/gold on red) -->
-            <img
-              src="/assets/header-main-emblem-frame.png"
-              class="header-frame-img"
-              alt=""
-              aria-hidden="true"
-            />
-            <!-- Brand text layered inside the diamond center -->
-            <div class="header-brand">
-              <span class="brand-top">SPICY</span>
-              <img
-                src="/assets/chili-icon-transparent.png"
-                class="brand-chili"
-                alt=""
-                aria-hidden="true"
-              />
-              <span class="brand-bottom">SPECS</span>
-            </div>
-          </div>
-        </a>
-        <p class="site-tagline">PATTERN LIBRARY &bull; EST. 2026</p>
-      </div>
-      <!-- Ornamental horizontal border between header and content -->
-      <div class="header-border-strip">
-        <img
-          src="/assets/header-ornate-border.png"
-          class="header-ornate-border"
-          alt=""
-          aria-hidden="true"
-        />
-      </div>
+      <!--
+        The logo image is the CSS background-image of .header-logo-area.
+        The tagline and rule live INSIDE .header-logo-area so background-size:cover
+        extends the image to fill the full header — no separate CSS background region,
+        no colour seam.
+      -->
+      <a href="/" class="header-logo-link" aria-label="Spicy Specs — Home">
+        <div class="header-logo-area">
+          <p class="site-tagline">PATTERN LIBRARY &bull; EST. 2026</p>
+          <div class="header-rule" aria-hidden="true"></div>
+        </div>
+      </a>
     </header>
 
     <main>
@@ -70,7 +48,7 @@ const {
 
     <footer class="site-footer">
       <div class="container">
-        <img src="/assets/header-ornate-border.png" class="footer-border" alt="" aria-hidden="true" />
+        <div class="footer-rule" aria-hidden="true"></div>
         <p class="footer-text">&copy; 2026 Spicy Specs &bull; Bottled for Human &amp; Agent Consumption</p>
       </div>
     </footer>
@@ -83,18 +61,9 @@ const {
      SITE HEADER
      ============================================================ */
 
+  /* Minimal shell — no background-color so the logo area fills it entirely */
   .site-header {
-    background-color: #8B1A1A;
-    position: relative;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .header-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.75rem 2rem 1.25rem;
+    line-height: 0; /* remove inline-block gap under .header-logo-link */
   }
 
   .header-logo-link {
@@ -102,97 +71,51 @@ const {
     text-decoration: none;
   }
 
-  /* ---- Emblem group: frame image + text stack ---- */
-  .header-emblem-group {
-    position: relative;
-    width: 340px;
-    height: 130px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* The ornamental diamond frame PNG.
-     mix-blend-mode: multiply removes the white background:
-     white × red-bg = red (white disappears), gold ornament × red = warm dark red (still visible). */
-  .header-frame-img {
-    position: absolute;
+  /*
+   * header-logo-area
+   * ─────────────────
+   * The generated wide logo PNG (1600×280, aspect ≈ 5.7:1) is the background.
+   * background-size: cover ensures it always fills the full box.
+   *
+   * Height is built from two layers of padding:
+   *   padding-top  = 17.5% (= 280/1600) preserves the logo's natural aspect ratio
+   *   padding-bottom contains the tagline text
+   *
+   * Because the tagline sits INSIDE this element, cover extends to fill it —
+   * one continuous image surface, zero CSS-vs-image colour seam.
+   */
+  .header-logo-area {
     width: 100%;
-    height: auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    mix-blend-mode: multiply;
-  }
-
-  /* Brand text stacked vertically inside the diamond center */
-  .header-brand {
+    padding-top: 17.5%;       /* logo natural aspect ratio: 280/1600 */
+    padding-bottom: 1.4rem;   /* space for tagline + rule */
+    background-image: url('/assets/header-logo-wide.png');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-color: #8B1A1A; /* shown only if image fails to load */
     position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.1rem;
+    line-height: 1.5;         /* restore line-height for text children */
   }
 
-  .brand-top,
-  .brand-bottom {
-    font-family: 'Cinzel', 'Playfair Display', serif;
-    font-size: 1.45rem;
-    font-weight: 900;
-    letter-spacing: 0.45em;
-    color: #F5EDD5;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    line-height: 1;
-    /* Indent to optically compensate for letter-spacing on the last char */
-    padding-left: 0.45em;
-  }
-
-  /* Chili illustration — cream/beige on transparent background.
-     Keep natural cream colour — it reads beautifully against the dark red. */
-  .brand-chili {
-    width: 30px;
-    height: auto;
-    opacity: 0.9;
-  }
-
-  /* "PATTERN LIBRARY • EST. 2026" tagline */
+  /* "PATTERN LIBRARY • EST. 2026" — floats on the image surface */
   .site-tagline {
     font-family: 'Merriweather', Georgia, serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    color: rgba(245, 237, 213, 0.7);
+    font-size: 0.62rem;
+    letter-spacing: 0.32em;
+    color: rgba(245, 237, 213, 0.65);
     text-transform: uppercase;
-    margin: 0.6rem 0 0;
-    padding-left: 0.3em; /* compensate letter-spacing */
+    text-align: center;
+    margin: 0;
+    padding: 0.55rem 0 0.6rem;
+    padding-left: 0.32em; /* compensate letter-spacing on last char */
   }
 
-  /* ---- Ornate bottom border ---- */
-  /* Use a CSS gradient rule instead of the PNG to avoid checkerboard transparency issues.
-     The ornate border PNG will be used only in the footer where multiply blend works on cream. */
-  .header-border-strip {
-    height: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .header-border-strip::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-top: 1px solid rgba(245, 237, 213, 0.5);
-    border-bottom: 1px solid rgba(245, 237, 213, 0.3);
-    top: 4px;
-    bottom: 4px;
-  }
-
-  .header-ornate-border {
-    display: block;
-    width: 100%;
-    height: auto;
-    mix-blend-mode: multiply; /* Makes white bg transparent against the red header */
-    opacity: 0.7;
+  /* CSS-only ornamental separator — two thin cream lines with a gap */
+  .header-rule {
+    height: 7px;
+    border-top: 1px solid rgba(245, 237, 213, 0.35);
+    border-bottom: 1px solid rgba(245, 237, 213, 0.18);
+    line-height: 0;
   }
 
   /* ============================================================
@@ -203,16 +126,14 @@ const {
     margin-top: var(--spacing-xl);
     padding: 0 0 var(--spacing-lg);
     text-align: center;
-    color: var(--text-muted);
   }
 
-  .footer-border {
-    display: block;
-    width: 100%;
-    height: auto;
-    mix-blend-mode: multiply;    /* white → cream bg, ornament stays warm gold */
-    opacity: 0.55;
+  .footer-rule {
+    height: 7px;
+    border-top: 1px solid var(--border-divider);
+    border-bottom: 1px solid rgba(136, 119, 102, 0.3);
     margin-bottom: var(--spacing-md);
+    line-height: 0;
   }
 
   .footer-text {
