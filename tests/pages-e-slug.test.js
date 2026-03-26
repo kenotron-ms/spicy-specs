@@ -45,9 +45,10 @@ describe('src/pages/e/[slug].astro - dynamic spec route', () => {
     expect(content).toMatch(/<Content\s*\/>/);
   });
 
-  it('calls spec.render() to get Content', () => {
+  it('calls render(spec) to get Content (Astro 5 pattern)', () => {
     const content = readFileSync(filePath, 'utf-8');
-    expect(content).toMatch(/spec\.render\(\)/);
+    // Astro 5 uses top-level render() from astro:content instead of spec.render()
+    expect(content).toMatch(/render\(spec\)/);
   });
 
   it('destructures spec from Astro.props', () => {

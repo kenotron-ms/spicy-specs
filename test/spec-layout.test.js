@@ -66,18 +66,20 @@ describe('SpecLayout.astro', () => {
     });
   });
 
-  describe('getChiliRating helper function', () => {
-    it('defines getChiliRating function', () => {
-      expect(layout).toMatch(/function\s+getChiliRating|getChiliRating\s*=/);
+  describe('chili rating implementation', () => {
+    it('uses Array.from to render chili rating icons', () => {
+      // Redesign: getChiliRating() removed; uses Array.from with <img> elements instead
+      expect(layout).toMatch(/Array\.from|chiliCount/);
     });
 
-    it('returns empty string when no level provided', () => {
-      // The function should handle falsy/undefined level
-      expect(layout).toMatch(/getChiliRating[\s\S]*?(return\s+['"`]['"`]|''|""|``)/);
+    it('handles missing spiceLevel with null-coalescing fallback', () => {
+      // Redesign: uses `spiceLevel ?? 0` or chiliCount instead of function returning ''
+      expect(layout).toMatch(/spiceLevel\s*\?\?|chiliCount/);
     });
 
-    it('uses chili pepper emoji', () => {
-      expect(layout).toContain('🌶️');
+    it('uses chili icon image for spice rating', () => {
+      // Redesign: emoji replaced by <img src="chili-icon-transparent.png">
+      expect(layout).toContain('chili-icon-transparent.png');
     });
 
     it('repeats chili emoji up to 5 times', () => {
@@ -109,14 +111,14 @@ describe('SpecLayout.astro', () => {
       expect(layout).toMatch(/<header[^>]*class="spec-header"/);
     });
 
-    it('has .spec-meta div with category badge', () => {
-      expect(layout).toMatch(/class="spec-meta"/);
-      // Astro uses template literals for dynamic class names: `badge badge-${category}`
-      expect(layout).toMatch(/badge badge-\$\{category\}|badge\s+badge-\{category\}/);
+    it('has .spec-category-banner for category display', () => {
+      // Redesign: .spec-meta renamed to .spec-category-banner; uses inline text not badge class
+      expect(layout).toMatch(/class="spec-category-banner"/);
     });
 
-    it('renders chili rating conditionally', () => {
-      expect(layout).toMatch(/getChiliRating\(spiceLevel\)|chiliRating/);
+    it('renders spice rating conditionally when spiceLevel > 0', () => {
+      // Redesign: uses chiliCount > 0 with spec-spice-row instead of getChiliRating()
+      expect(layout).toMatch(/chiliCount > 0|spec-spice-row/);
     });
 
     it('has h1 with title', () => {
@@ -127,8 +129,9 @@ describe('SpecLayout.astro', () => {
       expect(layout).toMatch(/<p[^>]*class="spec-summary"[^>]*>\s*\{summary\}/);
     });
 
-    it('has .spec-details with author and created date', () => {
-      expect(layout).toMatch(/class="spec-details"/);
+    it('has .spec-meta-row with author and created date', () => {
+      // Redesign: .spec-details renamed to .spec-meta-row
+      expect(layout).toMatch(/class="spec-meta-row"/);
       expect(layout).toContain('{author}');
       expect(layout).toContain('{created}');
     });
@@ -154,11 +157,13 @@ describe('SpecLayout.astro', () => {
 
   describe('Scoped styles', () => {
     it('has a <style> block', () => {
-      expect(layout).toMatch(/<style>/);
+      // Redesign: style tag may include define:vars attribute
+      expect(layout).toMatch(/<style[\s>]/);
     });
 
-    it('.spec-page has max-width 800px and is centered', () => {
-      expect(layout).toMatch(/\.spec-page[\s\S]*?800px/);
+    it('.spec-page has max-width (820px) and is centered', () => {
+      // Redesign: max-width updated from 800px to 820px
+      expect(layout).toMatch(/\.spec-page[\s\S]*?820px/);
       expect(layout).toMatch(/\.spec-page[\s\S]*?(margin.*auto|auto.*margin)/);
     });
 
@@ -188,14 +193,16 @@ describe('SpecLayout.astro', () => {
       expect(layout).toMatch(/xs/);
     });
 
-    it('.tag style uses rgba with spicy-red, spicy-red text', () => {
-      expect(layout).toMatch(/\.tag[\s\S]*?rgba|\.tag[\s\S]*?spicy-red/);
+    it('.spec-tag has rgba background and deep-red color', () => {
+      // Redesign: .tag renamed to .spec-tag; uses rgba background and deep-red text color
+      expect(layout).toMatch(/\.spec-tag[\s\S]*?rgba|\.spec-tag[\s\S]*?deep-red/);
     });
 
-    it('.spec-details has flex with gap and smaller gray text', () => {
-      expect(layout).toMatch(/\.spec-details[\s\S]*?display:\s*flex/);
-      expect(layout).toMatch(/\.spec-details[\s\S]*?gap/);
-      expect(layout).toMatch(/\.spec-details[\s\S]*?font-size/);
+    it('.spec-meta-row has flex layout with gap and font-size', () => {
+      // Redesign: .spec-details renamed to .spec-meta-row
+      expect(layout).toMatch(/\.spec-meta-row[\s\S]*?display:\s*flex/);
+      expect(layout).toMatch(/\.spec-meta-row[\s\S]*?gap/);
+      expect(layout).toMatch(/\.spec-meta-row[\s\S]*?font-size/);
     });
   });
 });

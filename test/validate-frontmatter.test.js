@@ -24,7 +24,7 @@ describe('validateFrontmatter', () => {
     const result = validateFrontmatter(data);
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
-    expect(result.errors).toContain('Missing required field: slug');
+    // Note: 'slug' removed from required fields in Astro 5 (ID derived from file path)
     expect(result.errors).toContain('Missing required field: category');
     expect(result.errors).toContain('Missing required field: summary');
   });

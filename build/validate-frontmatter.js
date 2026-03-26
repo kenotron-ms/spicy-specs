@@ -1,5 +1,6 @@
 const VALID_CATEGORIES = ['spec', 'antipattern', 'reference-app', 'pattern', 'philosophy'];
-const REQUIRED_FIELDS = ['title', 'slug', 'category', 'summary', 'created', 'updated', 'author'];
+// Note: 'slug' removed — Astro 5 derives collection ID from file path, no frontmatter slug needed
+const REQUIRED_FIELDS = ['title', 'category', 'summary', 'created', 'updated', 'author'];
 
 /**
  * Validate spec frontmatter against the content model schema.

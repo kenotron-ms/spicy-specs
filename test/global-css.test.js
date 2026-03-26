@@ -17,30 +17,37 @@ describe('Global CSS with design tokens', () => {
   });
 
   describe('design tokens in :root', () => {
-    it('defines --spicy-red color token', () => {
-      expect(css).toContain('--spicy-red: #A83232');
+    it('defines primary red color tokens', () => {
+      // Redesign: --spicy-red split into --color-deep-red and --color-bright-red
+      expect(css).toContain('--color-deep-red');
+      expect(css).toContain('--color-bright-red');
     });
 
-    it('defines --parchment color token', () => {
-      expect(css).toContain('--parchment: #EFE7CD');
+    it('defines parchment color token', () => {
+      // Redesign: --parchment renamed to --color-parchment
+      expect(css).toContain('--color-parchment');
     });
 
-    it('defines --gold color token', () => {
-      expect(css).toContain('--gold: #C9975B');
+    it('defines gold color token', () => {
+      // Redesign: --gold renamed to --color-aged-gold
+      expect(css).toContain('--color-aged-gold');
     });
 
-    it('defines --dark color token', () => {
-      expect(css).toContain('--dark: #2D2D2D');
+    it('defines dark color token', () => {
+      // Redesign: --dark renamed to --color-dark-brown and --color-near-black
+      expect(css).toContain('--color-dark-brown');
     });
 
-    it('defines --font-display with Georgia serif', () => {
-      expect(css).toContain('--font-display: Georgia, serif');
+    it('defines --font-display with Playfair Display serif', () => {
+      // Redesign: --font-display now uses Playfair Display as primary
+      expect(css).toContain("--font-display: 'Playfair Display'");
+      expect(css).toContain('serif');
     });
 
-    it('defines --font-ui with system font stack', () => {
-      expect(css).toContain('--font-ui:');
-      expect(css).toContain('-apple-system');
-      expect(css).toContain('BlinkMacSystemFont');
+    it('defines --font-body for body text', () => {
+      // Redesign: --font-ui removed; --font-body (Merriweather) used for body text
+      expect(css).toContain('--font-body:');
+      expect(css).toContain('Merriweather');
     });
 
     it('defines --font-code with monospace stack', () => {
@@ -74,44 +81,53 @@ describe('Global CSS with design tokens', () => {
       expect(css).toContain('border-box');
     });
 
-    it('body uses --font-ui', () => {
-      expect(css).toMatch(/body\s*\{[^}]*font-family:\s*var\(--font-ui\)/s);
+    it('body uses --font-body', () => {
+      // Redesign: body font changed from --font-ui to --font-body (Merriweather)
+      expect(css).toMatch(/body\s*\{[^}]*font-family:\s*var\(--font-body\)/s);
     });
 
-    it('body uses --dark for color', () => {
-      expect(css).toMatch(/body\s*\{[^}]*color:\s*var\(--dark\)/s);
+    it('body uses --text-body for color', () => {
+      // Redesign: body color uses --text-body semantic token instead of --dark
+      expect(css).toMatch(/body\s*\{[^}]*color:\s*var\(--text-body\)/s);
     });
 
-    it('body uses --parchment for background', () => {
-      expect(css).toMatch(/body\s*\{[^}]*background-color:\s*var\(--parchment\)/s);
+    it('body has parchment background color', () => {
+      // Redesign: body background is a warm parchment value (not var(--parchment))
+      expect(css).toMatch(/body\s*\{[^}]*background-color/s);
     });
 
-    it('body has 1.6 line-height', () => {
-      expect(css).toMatch(/body\s*\{[^}]*line-height:\s*1\.6/s);
+    it('body has line-height', () => {
+      // Redesign: line-height uses var(--line-normal) = 1.5 instead of literal 1.6
+      expect(css).toMatch(/body\s*\{[^}]*line-height/s);
     });
 
     it('headings use --font-display', () => {
       expect(css).toMatch(/h[123][^{]*\{[^}]*font-family:\s*var\(--font-display\)/s);
     });
 
-    it('h1 is 2.5rem', () => {
-      expect(css).toMatch(/h1[^{]*\{[^}]*font-size:\s*2\.5rem/s);
+    it('h1 uses display font size token', () => {
+      // Redesign: h1 uses var(--text-display-lg) = 3rem instead of literal 2.5rem
+      expect(css).toMatch(/h1[^{]*\{[^}]*font-size:\s*var\(--text-display-lg\)/s);
     });
 
-    it('h1 uses --spicy-red color', () => {
-      expect(css).toMatch(/h1[^{]*\{[^}]*color:\s*var\(--spicy-red\)/s);
+    it('headings use --text-heading color', () => {
+      // Redesign: headings use --text-heading semantic token instead of --spicy-red
+      expect(css).toMatch(/h[12345][^{]*\{[^}]*color:\s*var\(--text-heading\)/s);
     });
 
-    it('h2 is 2rem', () => {
-      expect(css).toMatch(/h2[^{]*\{[^}]*font-size:\s*2rem/s);
+    it('h2 uses heading font size token', () => {
+      // Redesign: h2 uses var(--text-heading-lg) = 1.75rem instead of literal 2rem
+      expect(css).toMatch(/h2[^{]*\{[^}]*font-size:\s*var\(--text-heading-lg\)/s);
     });
 
-    it('h3 is 1.5rem', () => {
-      expect(css).toMatch(/h3[^{]*\{[^}]*font-size:\s*1\.5rem/s);
+    it('h3 uses heading font size token', () => {
+      // Redesign: h3 uses var(--text-heading-md) = 1.5rem
+      expect(css).toMatch(/h3[^{]*\{[^}]*font-size:\s*var\(--text-heading-md\)/s);
     });
 
-    it('links use --spicy-red color', () => {
-      expect(css).toMatch(/a[^{]*\{[^}]*color:\s*var\(--spicy-red\)/s);
+    it('links use --color-bright-red color', () => {
+      // Redesign: links use --color-bright-red instead of --spicy-red
+      expect(css).toMatch(/a[^{]*\{[^}]*color:\s*var\(--color-bright-red\)/s);
     });
 
     it('links have underline on hover', () => {
@@ -130,12 +146,14 @@ describe('Global CSS with design tokens', () => {
       expect(css).toMatch(/code[^{]*\{[^}]*border-radius/s);
     });
 
-    it('pre block has dark background', () => {
-      expect(css).toMatch(/pre[^{]*\{[^}]*background-color:\s*var\(--dark\)/s);
+    it('pre block has dark background (color-dark-brown)', () => {
+      // Redesign: pre uses --color-dark-brown instead of --dark
+      expect(css).toMatch(/pre[^{]*\{[^}]*background-color:\s*var\(--color-dark-brown\)/s);
     });
 
-    it('pre block has parchment text color', () => {
-      expect(css).toMatch(/pre[^{]*\{[^}]*color:\s*var\(--parchment\)/s);
+    it('pre block has parchment text color (via --bg-main)', () => {
+      // Redesign: pre text color uses --bg-main (resolves to --color-parchment) instead of --parchment
+      expect(css).toMatch(/pre[^{]*\{[^}]*color:\s*var\(--bg-main\)/s);
     });
   });
 
@@ -164,24 +182,27 @@ describe('Global CSS with design tokens', () => {
       expect(css).toMatch(/\.badge[^{]*\{[^}]*text-transform:\s*uppercase/s);
     });
 
-    it('.badge-spec has blue color (#3B82F6)', () => {
-      expect(css).toMatch(/\.badge-spec[^{]*\{[^}]*#3B82F6/si);
+    it('.badge-spec uses --badge-spec color variable', () => {
+      // Redesign: badge colors use CSS variables, not hard-coded hex values
+      expect(css).toMatch(/\.badge-spec[^{]*\{[^}]*var\(--badge-spec\)/s);
     });
 
-    it('.badge-pattern has green color (#10B981)', () => {
-      expect(css).toMatch(/\.badge-pattern[^{]*\{[^}]*#10B981/si);
+    it('.badge-pattern uses --badge-pattern color variable', () => {
+      expect(css).toMatch(/\.badge-pattern[^{]*\{[^}]*var\(--badge-pattern\)/s);
     });
 
-    it('.badge-antipattern has red color (#EF4444)', () => {
-      expect(css).toMatch(/\.badge-antipattern[^{]*\{[^}]*#EF4444/si);
+    it('.badge-antipattern uses --badge-antipattern color variable', () => {
+      expect(css).toMatch(/\.badge-antipattern[^{]*\{[^}]*var\(--badge-antipattern\)/s);
     });
 
-    it('.badge-philosophy uses gold color', () => {
-      expect(css).toMatch(/\.badge-philosophy[^{]*\{[^}]*var\(--gold\)/s);
+    it('.badge-philosophy uses --badge-philosophy color variable', () => {
+      // Redesign: badge-philosophy uses CSS variable (resolves to near-black) instead of --gold
+      expect(css).toMatch(/\.badge-philosophy[^{]*\{[^}]*var\(--badge-philosophy\)/s);
     });
 
-    it('.badge-reference-app has purple color (#8B5CF6)', () => {
-      expect(css).toMatch(/\.badge-reference-app[^{]*\{[^}]*#8B5CF6/si);
+    it('.badge-reference-app uses --badge-reference-app color variable', () => {
+      // Redesign: badge-reference-app uses CSS variable (resolves to aged-gold) instead of purple
+      expect(css).toMatch(/\.badge-reference-app[^{]*\{[^}]*var\(--badge-reference-app\)/s);
     });
   });
 });

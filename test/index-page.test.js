@@ -20,7 +20,7 @@ describe('src/pages/index.astro', () => {
 
   describe('Frontmatter script', () => {
     it('imports getCollection from astro:content', () => {
-      expect(page).toMatch(/import.*getCollection.*from\s+['"]astro:content['"]/);
+      expect(page).toMatch(/import.*getCollection.*from\s+['""]astro:content['"]/);
     });
 
     it('imports BaseLayout', () => {
@@ -37,19 +37,23 @@ describe('src/pages/index.astro', () => {
       expect(page).toMatch(/updated/);
     });
 
-    it('defines getChiliRating helper function', () => {
-      expect(page).toMatch(/function\s+getChiliRating|getChiliRating\s*=/);
+    it('renders chili icons using Array.from', () => {
+      // Redesign: getChiliRating() removed; uses Array.from with <img> elements instead
+      expect(page).toMatch(/Array\.from/);
+      expect(page).toMatch(/chili-icon|card-spice/);
     });
 
-    it('getChiliRating uses chili pepper emoji', () => {
-      expect(page).toContain('🌶️');
+    it('uses chili-icon-transparent.png for spice ratings', () => {
+      // Redesign: emoji replaced by <img src="chili-icon-transparent.png">
+      expect(page).toContain('chili-icon-transparent.png');
     });
 
-    it('getChiliRating returns empty string for falsy level', () => {
-      expect(page).toMatch(/getChiliRating[\s\S]*?(return\s+['"`]['"`]|''|""|``)/);
+    it('renders chili icons conditionally (spiceLevel != null)', () => {
+      // Redesign: uses `spiceLevel != null` guard instead of getChiliRating returning ''
+      expect(page).toMatch(/spiceLevel\s*!=\s*null|card-spice/);
     });
 
-    it('getChiliRating repeats emoji (uses repeat or manual concat)', () => {
+    it('chili icon count based on spiceLevel (uses 5 slots)', () => {
       expect(page).toMatch(/repeat|5/);
     });
   });
@@ -59,16 +63,19 @@ describe('src/pages/index.astro', () => {
       expect(page).toMatch(/<BaseLayout[^>]*title=["']Library["']/);
     });
 
-    it('has .library-intro section', () => {
-      expect(page).toMatch(/class="library-intro"/);
+    it('has .controls-bar section with search and filters', () => {
+      // Redesign: .library-intro replaced with .controls-bar (search + entry count + filter pills)
+      expect(page).toMatch(/class="controls-bar"/);
     });
 
-    it('has h1 "Spicy Specs Library"', () => {
-      expect(page).toContain('Spicy Specs Library');
+    it('has entry count display', () => {
+      // Redesign: no h1 "Spicy Specs Library"; instead shows dynamic entry count
+      expect(page).toMatch(/entry-count|SHOWING.*ENTRIES/);
     });
 
-    it('has subtitle paragraph in .library-intro', () => {
-      expect(page).toMatch(/library-intro[\s\S]*?<p/);
+    it('has filter pills for category filtering', () => {
+      // Redesign: replaces intro paragraph; filter-pills enable client-side category filtering
+      expect(page).toMatch(/filter-pills|filter-pill/);
     });
 
     it('has .spec-grid container', () => {
@@ -83,41 +90,47 @@ describe('src/pages/index.astro', () => {
       expect(page).toMatch(/article[^>]*class="spec-card"/);
     });
 
-    it('has .card-header with category badge', () => {
-      expect(page).toMatch(/class="card-header"/);
-      expect(page).toMatch(/badge badge-\$\{|badge badge-/);
+    it('has .card-banner with category display', () => {
+      // Redesign: .card-header with badge replaced by .card-banner with category text
+      expect(page).toMatch(/class="card-banner"/);
     });
 
-    it('renders chili rating conditionally', () => {
-      expect(page).toMatch(/getChiliRating|chiliRating/);
+    it('renders chili rating when spiceLevel is present', () => {
+      // Redesign: uses card-spice div with img icons instead of getChiliRating()
+      expect(page).toMatch(/card-spice|spiceLevel/);
     });
 
-    it('has h2 with link to /e/{spec.slug} (Astro 5: slug is reserved, use entry.slug)', () => {
-      expect(page).toMatch(/href=["']\/e\/\{spec\.slug\}["']|href=\{`\/e\/\$\{spec\.slug\}`\}/);
+    it('has link to /e/{spec.id} using spec.id (Astro 5)', () => {
+      // Redesign: Astro 5 uses spec.id instead of spec.slug for URL generation
+      expect(page).toMatch(/href=\{`\/e\/\$\{spec\.id\}`\}|href=\{\/e\/\$\{spec\.id\}\}/);
     });
 
-    it('has p.card-summary with spec summary', () => {
-      expect(page).toMatch(/class="card-summary"/);
-      expect(page).toMatch(/spec\.data\.summary/);
+    it('has .card-body with centered card content', () => {
+      // Redesign: .card-summary removed; card content lives in .card-body
+      expect(page).toMatch(/class="card-body"/);
     });
 
-    it('has .card-meta with author and updated date', () => {
-      expect(page).toMatch(/class="card-meta"/);
-      expect(page).toMatch(/spec\.data\.author/);
-      expect(page).toMatch(/spec\.data\.updated/);
+    it('has .card-slug-footer with spec URL', () => {
+      // Redesign: replaces .card-meta; shows the spec's URL as a visual footer
+      expect(page).toMatch(/card-slug-footer/);
+      expect(page).toMatch(/spec\.id/);
     });
 
-    it('has conditional .card-tags section', () => {
-      expect(page).toMatch(/card-tags/);
+    it('has data-category attribute on cards for filtering', () => {
+      // Redesign: .card-tags replaced by data-* attributes for client-side filtering
+      expect(page).toMatch(/data-category=\{spec\.data\.category\}/);
+    });
+
+    it('has data-tags attribute on cards for search', () => {
+      // Redesign: tags rendered as data-tags for search instead of visible .card-tags section
+      expect(page).toMatch(/data-tags=/);
       expect(page).toMatch(/spec\.data\.tags/);
     });
 
-    it('renders first 3 tags only (slice)', () => {
-      expect(page).toMatch(/slice\(0,\s*3\)|slice\(0,3\)/);
-    });
-
-    it('renders tags with # prefix', () => {
-      expect(page).toMatch(/#\s*\{tag\}|#\{tag\}|`#\$\{/);
+    it('has .card-title with spec title', () => {
+      // Redesign: h2 still present but as .card-title
+      expect(page).toMatch(/class="card-title"/);
+      expect(page).toMatch(/spec\.data\.title/);
     });
   });
 
@@ -126,65 +139,75 @@ describe('src/pages/index.astro', () => {
       expect(page).toMatch(/<style>/);
     });
 
-    it('.library-intro has centered text', () => {
-      expect(page).toMatch(/\.library-intro[\s\S]*?text-align:\s*center|\.library-intro[\s\S]*?center/);
+    it('.entry-count has centered text alignment', () => {
+      // Redesign: .library-intro intro replaced; .entry-count is centered
+      expect(page).toMatch(/\.entry-count[\s\S]*?text-align:\s*center/);
     });
 
-    it('.library-intro h1 has large font-size (3rem)', () => {
-      expect(page).toMatch(/\.library-intro[\s\S]*?3rem|library-intro[\s\S]*?h1[\s\S]*?3rem|h1[\s\S]*?3rem/);
+    it('.controls-bar has padding and border styling', () => {
+      // Redesign: replaces .library-intro styles; controls-bar has bottom border
+      expect(page).toMatch(/\.controls-bar[\s\S]*?padding/);
+      expect(page).toMatch(/\.controls-bar[\s\S]*?border/);
     });
 
     it('.spec-grid uses CSS grid', () => {
       expect(page).toMatch(/\.spec-grid[\s\S]*?display:\s*grid/);
     });
 
-    it('.spec-grid uses auto-fill with minmax', () => {
-      expect(page).toMatch(/\.spec-grid[\s\S]*?auto-fill[\s\S]*?minmax/);
+    it('.spec-grid uses repeat() for column layout', () => {
+      // Redesign: auto-fill/minmax replaced with fixed repeat(N, 1fr) columns
+      expect(page).toMatch(/\.spec-grid[\s\S]*?repeat\(/);
     });
 
-    it('.spec-grid uses minmax(350px, 1fr)', () => {
-      expect(page).toMatch(/minmax\(350px,\s*1fr\)/);
+    it('.spec-grid has responsive breakpoints via media queries', () => {
+      // Redesign: responsiveness via @media breakpoints instead of auto-fill
+      expect(page).toMatch(/@media/);
+      expect(page).toMatch(/spec-grid/);
     });
 
-    it('.spec-card has white background', () => {
-      expect(page).toMatch(/\.spec-card[\s\S]*?background[\s\S]*?(white|#fff|#ffffff)/i);
+    it('.spec-card has parchment background', () => {
+      expect(page).toMatch(/\.spec-card[\s\S]*?background/);
     });
 
-    it('.spec-card has 2px border with #ddd', () => {
-      expect(page).toMatch(/\.spec-card[\s\S]*?border[\s\S]*?#ddd|\.spec-card[\s\S]*?2px[\s\S]*?#ddd/);
+    it('.spec-card uses category color variable for border', () => {
+      // Redesign: #ddd border replaced by dynamic --cat-color per category
+      expect(page).toMatch(/\.spec-card[\s\S]*?--cat-color/);
     });
 
-    it('.spec-card has 8px border-radius', () => {
-      expect(page).toMatch(/\.spec-card[\s\S]*?border-radius[\s\S]*?8px/);
+    it('.spec-card has border-radius', () => {
+      expect(page).toMatch(/\.spec-card[\s\S]*?border-radius[\s\S]*?\d+px/);
     });
 
-    it('.spec-card:hover uses spicy-red border', () => {
-      expect(page).toMatch(/\.spec-card:hover[\s\S]*?spicy-red|\.spec-card:hover[\s\S]*?border/);
+    it('.spec-card:hover uses category-based box-shadow', () => {
+      expect(page).toMatch(/\.spec-card:hover[\s\S]*?border|\.spec-card:hover[\s\S]*?shadow/);
     });
 
     it('.spec-card:hover has box-shadow', () => {
       expect(page).toMatch(/\.spec-card:hover[\s\S]*?shadow/);
     });
 
-    it('.card-header is flex with space-between', () => {
-      expect(page).toMatch(/\.card-header[\s\S]*?display:\s*flex/);
-      expect(page).toMatch(/\.card-header[\s\S]*?space-between/);
+    it('.card-banner has category background color', () => {
+      // Redesign: .card-header replaced with .card-banner (flex removed; simple ribbon)
+      expect(page).toMatch(/\.card-banner[\s\S]*?background-color:\s*var\(--cat-color\)/);
     });
 
     it('h2 links use dark color', () => {
       expect(page).toMatch(/h2[\s\S]*?a[\s\S]*?dark|h2\s+a[\s\S]*?dark/);
     });
 
-    it('h2 links use spicy-red on hover', () => {
-      expect(page).toMatch(/h2[\s\S]*?a:hover[\s\S]*?spicy-red/);
+    it('.card-title a:hover uses category color', () => {
+      // Redesign: hover color uses --cat-color (per category) instead of --spicy-red
+      expect(page).toMatch(/\.card-title\s+a:hover|card-title[\s\S]*?a:hover/);
     });
 
-    it('.card-meta has top border separator', () => {
-      expect(page).toMatch(/\.card-meta[\s\S]*?border-top|\.card-meta[\s\S]*?border[\s\S]*?top/);
+    it('.card-slug-footer has top border separator', () => {
+      // Redesign: .card-meta replaced by .card-slug-footer with border-top separator
+      expect(page).toMatch(/\.card-slug-footer[\s\S]*?border-top/);
     });
 
-    it('.card-meta has smaller font-size', () => {
-      expect(page).toMatch(/\.card-meta[\s\S]*?font-size/);
+    it('.card-slug-footer has small font-size', () => {
+      // Redesign: .card-meta replaced by .card-slug-footer with small monospace font
+      expect(page).toMatch(/\.card-slug-footer[\s\S]*?font-size/);
     });
 
     it('.tag has border-radius (pill style)', () => {

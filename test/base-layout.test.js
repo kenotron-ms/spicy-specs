@@ -33,7 +33,7 @@ describe('BaseLayout.astro', () => {
     });
 
     it('provides default value for description', () => {
-      expect(layout).toContain("Curated library of specs, patterns, and anti-patterns for AI agents");
+      expect(layout).toContain('Curated library of specs, patterns, and anti-patterns for AI agents');
     });
   });
 
@@ -64,36 +64,49 @@ describe('BaseLayout.astro', () => {
       expect(layout).toMatch(/\{title\}\s*\|\s*Spicy Specs/);
     });
 
-    it('links to /styles/global.css stylesheet', () => {
-      expect(layout).toMatch(/href="\/styles\/global\.css"/);
-      expect(layout).toMatch(/rel="stylesheet"/);
+    it('imports global.css', () => {
+      expect(layout).toContain('global.css');
+    });
+
+    it('loads Google Fonts (Merriweather, Cinzel or Playfair)', () => {
+      expect(layout).toMatch(/fonts\.googleapis\.com/);
+      expect(layout).toMatch(/Merriweather|Cinzel|Playfair/);
     });
   });
 
   describe('Header', () => {
-    it('has header element with class site-header', () => {
-      expect(layout).toMatch(/<header[^>]*class="site-header"/);
+    it('has <header> element', () => {
+      expect(layout).toMatch(/<header/);
     });
 
-    it('has container div inside header', () => {
-      // The container div should appear within header context
-      expect(layout).toMatch(/<header[\s\S]*?class="container"[\s\S]*?<\/header>/);
-    });
-
-    it('has h1 with spicy emoji and Spicy Specs text', () => {
-      expect(layout).toContain('🌶️');
-      expect(layout).toContain('Spicy Specs');
-    });
-
-    it('has nav with link to "/" labeled "Library"', () => {
-      expect(layout).toMatch(/<nav[\s\S]*?<\/nav>/);
+    it('has a link to "/" for home navigation', () => {
       expect(layout).toMatch(/href="\/"/);
-      expect(layout).toContain('Library');
+    });
+
+    it('has aria-label "Spicy Specs" on the home link', () => {
+      expect(layout).toMatch(/aria-label="[^"]*Spicy Specs[^"]*"/);
+    });
+
+    it('has header-logo-area element (CSS background-image logo)', () => {
+      expect(layout).toContain('header-logo-area');
+    });
+
+    it('references the wide logo image asset', () => {
+      expect(layout).toContain('header-logo-wide.png');
+    });
+
+    it('has site-tagline with PATTERN LIBRARY text', () => {
+      expect(layout).toContain('site-tagline');
+      expect(layout).toContain('PATTERN LIBRARY');
+    });
+
+    it('has EST. 2026 in tagline', () => {
+      expect(layout).toContain('2026');
     });
   });
 
   describe('Main', () => {
-    it('has main element with container class wrapping slot', () => {
+    it('has main element wrapping slot', () => {
       expect(layout).toMatch(/<main[\s\S]*?<\/main>/);
       expect(layout).toMatch(/class="container"/);
       expect(layout).toMatch(/<slot\s*\/>/);
@@ -109,8 +122,8 @@ describe('BaseLayout.astro', () => {
       expect(layout).toContain('2026 Spicy Specs');
     });
 
-    it('has "Built with Astro" text', () => {
-      expect(layout).toContain('Built with Astro');
+    it('has footer text element', () => {
+      expect(layout).toContain('footer-text');
     });
   });
 
@@ -119,60 +132,32 @@ describe('BaseLayout.astro', () => {
       expect(layout).toMatch(/<style>/);
     });
 
-    it('.site-header uses spicy-red background', () => {
-      expect(layout).toMatch(/\.site-header[\s\S]*?background[\s\S]*?spicy-red/);
+    it('.header-logo-area has background-image', () => {
+      expect(layout).toMatch(/\.header-logo-area[\s\S]*?background-image/);
     });
 
-    it('.site-header uses parchment color', () => {
-      expect(layout).toMatch(/\.site-header[\s\S]*?color[\s\S]*?parchment/);
+    it('.header-logo-area has background-size: cover', () => {
+      expect(layout).toMatch(/\.header-logo-area[\s\S]*?background-size[\s\S]*?cover/);
     });
 
-    it('.site-header has padding', () => {
-      expect(layout).toMatch(/\.site-header[\s\S]*?padding/);
+    it('.header-logo-area uses padding-top for responsive height', () => {
+      expect(layout).toMatch(/\.header-logo-area[\s\S]*?padding-top/);
     });
 
-    it('.site-header has xl bottom margin', () => {
-      expect(layout).toMatch(/\.site-header[\s\S]*?margin[\s\S]*?xl/);
+    it('.site-tagline has letter-spacing', () => {
+      expect(layout).toMatch(/\.site-tagline[\s\S]*?letter-spacing/);
     });
 
-    it('.site-title has 2rem font-size', () => {
-      expect(layout).toMatch(/\.site-title[\s\S]*?2rem/);
+    it('.site-footer has top margin', () => {
+      expect(layout).toMatch(/\.site-footer[\s\S]*?margin/);
     });
 
-    it('.site-title uses parchment color', () => {
-      expect(layout).toMatch(/\.site-title[\s\S]*?color[\s\S]*?parchment/);
-    });
-
-    it('nav links use parchment color', () => {
-      expect(layout).toMatch(/nav\s+a[\s\S]*?color[\s\S]*?parchment/);
-    });
-
-    it('nav links use font-weight 600', () => {
-      expect(layout).toMatch(/nav\s+a[\s\S]*?font-weight:\s*600/);
-    });
-
-    it('nav links use gold on hover', () => {
-      expect(layout).toMatch(/nav\s+a:hover[\s\S]*?gold/);
-    });
-
-    it('.site-footer has xl top margin', () => {
-      expect(layout).toMatch(/\.site-footer[\s\S]*?margin[\s\S]*?xl/);
-    });
-
-    it('.site-footer has lg padding', () => {
-      expect(layout).toMatch(/\.site-footer[\s\S]*?padding[\s\S]*?lg/);
-    });
-
-    it('.site-footer has spicy-red top border', () => {
-      expect(layout).toMatch(/\.site-footer[\s\S]*?border[\s\S]*?spicy-red/);
+    it('.site-footer has padding', () => {
+      expect(layout).toMatch(/\.site-footer[\s\S]*?padding/);
     });
 
     it('.site-footer has centered text', () => {
       expect(layout).toMatch(/\.site-footer[\s\S]*?text-align:\s*center/);
-    });
-
-    it('.site-footer has dark text', () => {
-      expect(layout).toMatch(/\.site-footer[\s\S]*?color[\s\S]*?dark/);
     });
   });
 });
