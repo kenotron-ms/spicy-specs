@@ -86,11 +86,18 @@ const {
    */
   .header-logo-area {
     width: 100%;
-    padding-top: 17.5%;       /* logo natural aspect ratio: 280/1600 */
+    /*
+     * padding-top drives the logo height proportionally.
+     * Measurement from approved frame: 320px header / 1920px frame = 16.7% of width.
+     * The ~72px of fixed overhead (tagline padding + text + rule + container padding)
+     * means the logo area itself should be: (320 - 72) / 1920 ≈ 12.9% → rounded to 13%.
+     * At 1920px: (13% × 1920) + 72px ≈ 249 + 72 = 321px ≈ 320px target. ✓
+     */
+    padding-top: 13%;
     padding-bottom: 1.4rem;   /* space for tagline + rule */
     background-image: url('/assets/header-logo-wide.png');
     background-size: cover;
-    background-position: center top;
+    background-position: center center;
     background-repeat: no-repeat;
     background-color: #8B1A1A; /* shown only if image fails to load */
     position: relative;
