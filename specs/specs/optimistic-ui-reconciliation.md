@@ -7,6 +7,8 @@ summary: "How to show instant user feedback before server confirmation without c
 created: "2026-03-25"
 updated: "2026-03-25"
 author: "ken"
+antipatterns: 12
+invariants: 11
 ---
 
 ## What This Is

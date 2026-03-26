@@ -21,13 +21,44 @@ const {
     <title>{title} | Spicy Specs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Merriweather:wght@400;700&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet" />
   </head>
   <body>
+
     <header class="site-header">
-      <div class="header-content">
-        <h1 class="site-title">SPICY SPECS</h1>
-        <p class="site-subtitle">PATTERN LIBRARY • EST. 2026</p>
+      <div class="header-inner">
+        <a href="/" class="header-logo-link" aria-label="Spicy Specs — Home">
+          <div class="header-emblem-group">
+            <!-- Ornamental diamond frame (transparent, renders cream/gold on red) -->
+            <img
+              src="/assets/header-main-emblem-frame.png"
+              class="header-frame-img"
+              alt=""
+              aria-hidden="true"
+            />
+            <!-- Brand text layered inside the diamond center -->
+            <div class="header-brand">
+              <span class="brand-top">SPICY</span>
+              <img
+                src="/assets/chili-icon-transparent.png"
+                class="brand-chili"
+                alt=""
+                aria-hidden="true"
+              />
+              <span class="brand-bottom">SPECS</span>
+            </div>
+          </div>
+        </a>
+        <p class="site-tagline">PATTERN LIBRARY &bull; EST. 2026</p>
+      </div>
+      <!-- Ornamental horizontal border between header and content -->
+      <div class="header-border-strip">
+        <img
+          src="/assets/header-ornate-border.png"
+          class="header-ornate-border"
+          alt=""
+          aria-hidden="true"
+        />
       </div>
     </header>
 
@@ -39,53 +70,156 @@ const {
 
     <footer class="site-footer">
       <div class="container">
-        <p>&copy; 2026 Spicy Specs. Built with Astro.</p>
+        <img src="/assets/header-ornate-border.png" class="footer-border" alt="" aria-hidden="true" />
+        <p class="footer-text">&copy; 2026 Spicy Specs &bull; Bottled for Human &amp; Agent Consumption</p>
       </div>
     </footer>
+
   </body>
 </html>
 
 <style>
+  /* ============================================================
+     SITE HEADER
+     ============================================================ */
+
   .site-header {
-    background-color: #A83232;
-    color: var(--text-on-dark);
-    min-height: 25vh;
+    background-color: #8B1A1A;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .header-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.75rem 2rem 1.25rem;
+  }
+
+  .header-logo-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  /* ---- Emblem group: frame image + text stack ---- */
+  .header-emblem-group {
+    position: relative;
+    width: 340px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: var(--spacing-xl);
-    box-shadow: var(--shadow-card);
   }
 
-  .header-content {
-    text-align: center;
+  /* The ornamental diamond frame PNG.
+     mix-blend-mode: multiply removes the white background:
+     white × red-bg = red (white disappears), gold ornament × red = warm dark red (still visible). */
+  .header-frame-img {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
   }
 
-  .site-title {
-    font-family: var(--font-display);
-    font-size: 3.5rem;
-    font-weight: var(--weight-bold);
+  /* Brand text stacked vertically inside the diamond center */
+  .header-brand {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+  }
+
+  .brand-top,
+  .brand-bottom {
+    font-family: 'Cinzel', 'Playfair Display', serif;
+    font-size: 1.45rem;
+    font-weight: 900;
+    letter-spacing: 0.45em;
+    color: #F5EDD5;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    /* Indent to optically compensate for letter-spacing on the last char */
+    padding-left: 0.45em;
+  }
+
+  /* Chili illustration — cream/beige on transparent background.
+     Keep natural cream colour — it reads beautifully against the dark red. */
+  .brand-chili {
+    width: 30px;
+    height: auto;
+    opacity: 0.9;
+  }
+
+  /* "PATTERN LIBRARY • EST. 2026" tagline */
+  .site-tagline {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.65rem;
     letter-spacing: 0.3em;
-    color: #F5F5DC;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    margin: 0 0 1rem 0;
+    color: rgba(245, 237, 213, 0.7);
+    text-transform: uppercase;
+    margin: 0.6rem 0 0;
+    padding-left: 0.3em; /* compensate letter-spacing */
   }
 
-  .site-subtitle {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    font-weight: var(--weight-normal);
-    letter-spacing: 0.2em;
-    color: rgba(245, 245, 220, 0.9);
-    margin: 0;
+  /* ---- Ornate bottom border ---- */
+  /* Use a CSS gradient rule instead of the PNG to avoid checkerboard transparency issues.
+     The ornate border PNG will be used only in the footer where multiply blend works on cream. */
+  .header-border-strip {
+    height: 12px;
+    position: relative;
+    overflow: hidden;
   }
+
+  .header-border-strip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-top: 1px solid rgba(245, 237, 213, 0.5);
+    border-bottom: 1px solid rgba(245, 237, 213, 0.3);
+    top: 4px;
+    bottom: 4px;
+  }
+
+  .header-ornate-border {
+    display: block;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply; /* Makes white bg transparent against the red header */
+    opacity: 0.7;
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
 
   .site-footer {
     margin-top: var(--spacing-xl);
-    padding: var(--spacing-lg);
-    border-top: var(--border-width) solid var(--border-divider);
+    padding: 0 0 var(--spacing-lg);
     text-align: center;
     color: var(--text-muted);
-    font-size: var(--text-small);
+  }
+
+  .footer-border {
+    display: block;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply;    /* white → cream bg, ornament stays warm gold */
+    opacity: 0.55;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .footer-text {
+    font-family: var(--font-body);
+    font-size: var(--text-tiny);
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin: 0;
   }
 </style>

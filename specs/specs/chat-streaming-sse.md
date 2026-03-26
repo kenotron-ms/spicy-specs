@@ -7,6 +7,8 @@ summary: "Canonical SSE chat streaming architecture — 19 catalogued anti-patte
 created: "2026-03-19"
 updated: "2026-03-25"
 author: "ken"
+antipatterns: 19
+invariants: 13
 ---
 
 ## Canonical Architecture

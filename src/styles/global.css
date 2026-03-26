@@ -98,10 +98,9 @@ body {
   font-family: var(--font-body);
   font-weight: var(--weight-normal);
   color: var(--text-body);
-  background-color: var(--bg-main);
-  background-image: var(--texture-parchment);
-  background-size: cover;
-  background-attachment: fixed;
+  /* Warm parchment base — no texture on body to avoid checkerboard artifacts.
+     Individual components (cards) apply the texture where appropriate. */
+  background-color: #EDE0C4;
   line-height: var(--line-normal);
   margin: 0;
   padding: 0;
